@@ -1,17 +1,20 @@
 package org.sims;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import org.sims.models.Particle;
+import org.sims.models.Vector;
+
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
-        }
+        Particle p1 = new Particle(Vector.createNormalized(new Vector(1,1)),Vector.createNormalized(new Vector(1,1)), 1);
+        Particle p2 = new Particle(new Vector(3,3),Vector.createNormalized(new Vector(-1,-1)), 1);
+        Particle p3 = new Particle(new Vector(5,5),Vector.createNormalized(new Vector(1,1)), 1);
+        Particle p4 = new Particle(new Vector(3,3),new Vector(0,0), 1);
+
+
+        System.out.println("collision p1-p2: "+p1.collisionTime(p2));
+        System.out.println("collision p2-p1: "+p2.collisionTime(p1));
+        System.out.println("collision p1-p3 ===> should be inf: "+p1.collisionTime(p3));
+        System.out.println("collision p1-p4 ===> should not be inf: "+p1.collisionTime(p4));
     }
 }
