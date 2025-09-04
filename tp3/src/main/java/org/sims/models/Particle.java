@@ -68,13 +68,7 @@ public class Particle {
      * @return smallest collision time
      */
     public double collisionTimeWithWalls(final List<Wall> walls) {
-        double tc = Double.POSITIVE_INFINITY;
-
-        for (final var w : walls) {
-            tc = Math.min(w.collidesWith(this), tc);
-        }
-
-        return tc;
+        return walls.parallelStream().map(w -> w.collidesWith(this)).min(Double::compareTo).orElse(Double.POSITIVE_INFINITY);
     }
 
     private static final double MAGIC_NUMBER = 0.09;
