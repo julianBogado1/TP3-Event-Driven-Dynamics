@@ -109,16 +109,15 @@ public class Particle {
         // Check if particle center plus radius is within the bounded area formed by walls
         // For a rectangular boundary, we need to ensure the particle doesn't go outside
 
-        // Find the bounding box of the walls
-        double minX = Double.MAX_VALUE, maxX = Double.MIN_VALUE;
-        double minY = Double.MAX_VALUE, maxY = Double.MIN_VALUE;
+        double minX = 0.0, maxX = 0.09;
+        double minY = 0.0, maxY = 0.09;
 
-        for(Wall w : walls){
-            minX = Math.min(minX, Math.min(w.vertex1.getX(), w.vertex2.getX()));
-            maxX = Math.max(maxX, Math.max(w.vertex1.getX(), w.vertex2.getX()));
-            minY = Math.min(minY, Math.min(w.vertex1.getY(), w.vertex2.getY()));
-            maxY = Math.max(maxY, Math.max(w.vertex1.getY(), w.vertex2.getY()));
-        }
+        System.out.println("particle: "+p);
+        System.out.println("MinX: "+minX + " MaxX: " + maxX + "MinY:  " + minY + "MaxY:  " + maxY);
+        System.out.println(
+        "Check X: " + ((pos.getX() - radius >= minX) &&
+               (pos.getX() + radius <= maxX)) + " Check Y: " + ((pos.getY() - radius >= minY) &&
+               (pos.getY() + radius <= maxY))) ;
 
         // Check if particle (considering its radius) is within bounds
         return (pos.getX() - radius >= minX) &&
