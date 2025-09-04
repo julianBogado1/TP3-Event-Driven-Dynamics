@@ -77,6 +77,8 @@ public class Particle {
         return tc;
     }
 
+    private static final double MAGIC_NUMBER = 0.09;
+
     /**
      * Generates initial list of particles with random positions and radii
      *
@@ -85,8 +87,6 @@ public class Particle {
      *                         components
      * @return true if valid position
      */
-    private static final double MAGIC_NUMBER = 0.09;
-
     public static List<Particle> generateInitialState(int numParticles, double startingVelocity, double radius) {
         final List<Wall> walls = Wall.generate(0.05);
         final List<Particle> particles = new ArrayList<>(numParticles);
