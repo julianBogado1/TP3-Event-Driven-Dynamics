@@ -69,42 +69,83 @@ public class Particle {
         return tc;
     }
 
-
+    /**
+     * Generates initial list of particles with random positions and radii
+     * @param numParticles number of particles to generate
+     * @param startingVelocity initial velocity of particles -> now used as x,y components
+     * @return true if valid position
+     */
     private static final double MAGIC_NUMBER = 0.09;
-    public List<Particle> generateInitialState(int numParticles, double startingVelocity){
+    public static List<Particle> generateInitialState(int numParticles, double startingVelocity, double radius){
         List<Wall> walls = Wall.generate(0.05);
         List<Particle> particles = new ArrayList<>();
         for(int i=0; i<numParticles; i++){
             boolean generated = false;
-            double x;
-            double y;
+            double x, y;
             while(!generated){
                 x = Math.random() * MAGIC_NUMBER;
                 y = Math.random() * MAGIC_NUMBER;
-                Particle p = new Particle(new Vector(x,y), new Vector(x,y), radius);
-                if(checkValidPosition(p, walls) && checkOverlap(p, particles)) {
+//                radius = Math.random() * MAGIC_NUMBER;
+                Particle p = new Particle(new Vector(x,y), new Vector(startingVelocity,startingVelocity), radius); //TODO random velocity direction??
+                if(checkValidPosition(p, walls) && checkNonOverlap(p, particles)) {
                     generated = true;
-
+                    particles.add(p); // Add the particle to the list
                 }
             }
         }
+        if(particles.size() < numParticles){throw new IllegalArgumentException("Radius too big or too many particles");}
         return particles;
     }
 
-    private boolean checkValidPosition(Particle p, List<Wall> walls){
-        boolean valid = false;
+    /**
+     * Checks if a particle is inside boundaries
+     * Assumes particles start in a rectangular area
+     * @return true if valid position
+     */
+    private static boolean checkValidPosition(Particle p, List<Wall> walls){
+        Vector pos = p.getPosition();
+        double radius = p.getRadius();
+
+        // Check if particle center plus radius is within the bounded area formed by walls
+        // For a rectangular boundary, we need to ensure the particle doesn't go outside
+
+        // Find the bounding box of the walls
+        double minX = Double.MAX_VALUE, maxX = Double.MIN_VALUE;
+        double minY = Double.MAX_VALUE, maxY = Double.MIN_VALUE;
+
         for(Wall w : walls){
-//            check particle inside walls
+            minX = Math.min(minX, Math.min(w.vertex1.getX(), w.vertex2.getX()));
+            maxX = Math.max(maxX, Math.max(w.vertex1.getX(), w.vertex2.getX()));
+            minY = Math.min(minY, Math.min(w.vertex1.getY(), w.vertex2.getY()));
+            maxY = Math.max(maxY, Math.max(w.vertex1.getY(), w.vertex2.getY()));
         }
-        return valid;
+
+        // Check if particle (considering its radius) is within bounds
+        return (pos.getX() - radius >= minX) &&
+               (pos.getX() + radius <= maxX) &&
+               (pos.getY() - radius >= minY) &&
+               (pos.getY() + radius <= maxY);
     }
 
-    private boolean checkOverlap(Particle p, List<Particle> particles){
-        boolean overlap = false;
+    private static boolean checkNonOverlap(Particle p, List<Particle> particles){
+        Vector pos = p.getPosition();
+        double radius = p.getRadius();
+
         for(Particle other : particles){
-            //check overlap accounting for particles radiuses
+            Vector otherPos = other.getPosition();
+            double otherRadius = other.getRadius();
+
+            // Calculate distance between particle centers
+            double dx = pos.getX() - otherPos.getX();
+            double dy = pos.getY() - otherPos.getY();
+            double distance = Math.sqrt(dx * dx + dy * dy);
+
+            // Check if distance is less than sum of radii (overlap condition)
+            if(distance < radius + otherRadius){
+                return false; // Overlap detected
+            }
         }
-        return overlap;
+        return true; // No overlap
     }
 
     @Override
@@ -116,5 +157,9 @@ public class Particle {
                 position.equals(particle.position) &&
                 velocity.equals(particle.velocity);
     }
-}
 
+    @Override
+    public String toString() {
+        return String.format("%s, %s, %s", position, velocity, radius);
+    }
+}

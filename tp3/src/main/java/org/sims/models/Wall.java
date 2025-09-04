@@ -64,5 +64,8 @@ public class Wall{
         return Double.POSITIVE_INFINITY;
     }
 
-
+    @Override
+    public String toString(){
+        return String.format("%s, %s", vertex1, vertex2);
+    }
 }

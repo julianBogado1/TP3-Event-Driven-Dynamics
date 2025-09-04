@@ -59,4 +59,9 @@ public class Vector {
         Vector vector = (Vector) o;
         return Double.compare(vector.x, x) == 0 && Double.compare(vector.y, y) == 0;
     }
+
+    @Override
+    public String toString() {
+        return String.format("(%s, %s)", x, y);
+    }
 }

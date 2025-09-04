@@ -36,3 +36,11 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Python ###
+*env/
+env/
+venv/
+.venv/
+ENV/
+*env/*
