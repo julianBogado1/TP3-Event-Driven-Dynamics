@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 public abstract class Resources {
-    public static final String OUTPUT_PATH = Path.of("src", "main", "resources").toAbsolutePath().toString();
+    public static final String OUTPUT_PATH = Path.of("src", "main", "python", "simulations").toAbsolutePath().toString();
 
     public static BufferedWriter writer(String... path) throws IOException {
         return new BufferedWriter(new FileWriter(pathed(path).toFile()));

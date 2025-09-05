@@ -14,13 +14,14 @@ def path(*name: str):
     :param name: The name of the resource file.
     :return: The absolute path to the resource file.
     """
-    return pth.abspath(pth.join(pth.dirname(__file__), '..', 'resources', *name))
+    return pth.abspath(pth.join(pth.dirname(__file__), 'simulations', *name))
 
 @cache
 def config(file: str | None = None) -> dict[str, str | int | float]:
     """
     Reads the initial conditions from the JSON configuration file.
 
+    .. deprecated:: Config files are not used anymore.
     :return: A dictionary containing the configuration.
     """
     config_path = path(file if file is not None else 'initial_conditions.json')
