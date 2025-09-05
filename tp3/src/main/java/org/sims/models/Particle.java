@@ -38,7 +38,7 @@ public class Particle {
      * @see #move(double)
      */
     public void move() {
-        move(1);
+        move(0.001);
     }
 
     public Vector getPosition() {
