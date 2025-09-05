@@ -42,6 +42,10 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls)
     }
 
     public record Engine(Simulation simulation, ExecutorService executor) implements Iterable<Step>, AutoCloseable {
+        public Step initial() {
+            return new Step(0, List.copyOf(simulation.particles()), null);
+        }
+
         @Override
         public Iterator<Step> iterator() {
             return new Iterator<Step>() {
@@ -56,7 +60,7 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls)
                 @Override
                 public Step next() {
                     particles.parallelStream().forEach(Particle::move);
-                    return new Step(current++, List.copyOf(particles), null);
+                    return new Step(++current, List.copyOf(particles), null);
                 }
             };
         }
