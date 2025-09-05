@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 public class Main {
     public static void main(String[] args) throws Exception {
         final var walls = Wall.generate(0.06);
-        final var particles = Particle.generateInitialState(20, 0.3, 0.005);
+        final var particles = Particle.generateInitialState(20, 0.01, 0.005);
 
         try (final var writer = Resources.writer("setup.txt")) {
             writer.write("%d %.14f\n".formatted(particles.size(), 0.06));
