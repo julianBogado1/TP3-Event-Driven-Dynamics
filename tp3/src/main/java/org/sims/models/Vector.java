@@ -69,6 +69,28 @@ public class Vector {
         return Math.sqrt(x * x + y * y);
     }
 
+
+    /**
+     * Computes angle between 2 vectors
+     * @param v1 first vector
+     * @param v2 second vector
+     * @return angle in radians
+     */
+    public static double angle(Vector v1, Vector v2){
+        double norm1 = norm(v1);
+        double norm2 = norm(v2);
+        return Math.acos(v1.dot(v2)/ (norm1*norm2));
+    }
+
+    /**
+     * Returns this vector as a column matrix
+     * @return this vector as a vector of 1 vector
+     */
+    public double[][] toColumnMatrix(){
+        return new double[][]{{x},
+                             {y}};
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)

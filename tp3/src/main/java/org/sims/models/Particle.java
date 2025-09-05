@@ -1,5 +1,8 @@
 package org.sims.models;
 
+import org.apache.commons.math3.linear.MatrixUtils;
+import org.apache.commons.math3.linear.RealMatrix;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -179,6 +182,49 @@ public class Particle {
 
         return true; // No overlap
     }
+
+
+
+    private static double ct = 1, cn = 1;
+    /**
+     * Changes velocities of the particles received
+     * @param p first particle
+     * @param other second particle
+     */
+    public static void collide(Particle p, Particle other) {
+        Vector normalVersor = Vector.subtract(p.getPosition(), other.getPosition());
+        Vector xVersor = new Vector(1,0);
+        double alpha = Vector.angle(normalVersor, xVersor);    //angle between normal versor of collision and x axis
+        double cosAlpha = Math.cos(alpha);
+        double sinAlpha = Math.sin(alpha);
+        double m11 = (-cn * cosAlpha*cosAlpha) + (ct * sinAlpha*sinAlpha);
+        double m12 = -(cn+ct)*sinAlpha*cosAlpha;
+        double m21 = m12;
+        double m22 = (-cn * sinAlpha*sinAlpha) + (ct * cosAlpha*cosAlpha);
+        double[][] m = new double[][]{  {m11, m12},
+                                        {m21, m22} };
+        RealMatrix collisionOperator = MatrixUtils.createRealMatrix(m);
+
+        //=======First particle=======
+        RealMatrix v1 = MatrixUtils.createRealMatrix(p.getVelocity().toColumnMatrix());
+        double[] v1Prime = collisionOperator.multiply(v1).getColumn(0);
+        p.setVelocity(new Vector(v1Prime[0], v1Prime[1]));
+
+        //=======Second particle=====
+        RealMatrix v2 = MatrixUtils.createRealMatrix(other.getVelocity().toColumnMatrix());
+        double[] v2Prime = collisionOperator.multiply(v2).getColumn(0);
+        other.setVelocity(new Vector(v2Prime[0], v2Prime[1]));
+    }
+
+    public static void collide(Particle p, Wall w) {
+        if(w.getVertex1().getX()-w.getVertex2().getX()<=0){ //horizontal wall
+            p.setVelocity(new Vector(p.getVelocity().getX(), -p.getVelocity().getY()));
+        }
+        else if(w.getVertex1().getY()-w.getVertex2().getY()<=0){ //vertical wall
+            p.setVelocity(new Vector(-p.getVelocity().getX(), p.getVelocity().getY()));
+        }
+    }
+
 
     @Override
     public boolean equals(Object o) {

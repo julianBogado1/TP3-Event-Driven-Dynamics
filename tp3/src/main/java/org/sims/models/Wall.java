@@ -12,6 +12,13 @@ public class Wall {
         this.vertex2 = v2;
     }
 
+    public Vector getVertex1() {
+        return vertex1;
+    }
+    public Vector getVertex2() {
+        return vertex2;
+    }
+
     /**
      * Generate the contour of the system
      *
