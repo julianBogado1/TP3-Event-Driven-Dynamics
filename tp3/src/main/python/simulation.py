@@ -1,9 +1,15 @@
 import matplotlib.pyplot as plt
+from matplotlib.patches import Circle
+
 import re
 
-def read_data(filename):
-    walls = []
-    particles = []
+type Vector = tuple[float, float]
+type Wall = tuple[Vector, Vector]
+type Particle = tuple[float, float, float]  # (x, y, radius)
+
+def read_data(filename: str):
+    walls: list[Wall] = []
+    particles: list[Particle] = []
     with open(filename, "r") as f:
         lines = f.readlines()
 
@@ -39,24 +45,23 @@ def read_data(filename):
     return walls, particles
 
 
-def plot_scene(walls, particles):
-    fig, ax = plt.subplots()
+def plot_scene(walls: list[Wall], particles: list[Particle]):
+    _, ax = plt.subplots() # pyright: ignore[reportUnknownMemberType]
 
     # Draw walls
     for (x1, y1), (x2, y2) in walls:
-        ax.plot([x1, x2], [y1, y2], color="black")
+        ax.plot([x1, x2], [y1, y2], color="black") # pyright: ignore[reportUnknownMemberType]
 
     # Draw particles
     for x, y, r in particles:
-        circle = plt.Circle((x, y), r, color="blue", alpha=0.6)
+        circle = Circle((x, y), r, color="blue", alpha=0.6)
         ax.add_patch(circle)
 
     ax.set_aspect("equal", adjustable="box")
-    plt.xlabel("X")
-    plt.ylabel("Y")
-    plt.title("Particles inside Walls")
-    plt.show()
-
+    plt.xlabel("X") # pyright: ignore[reportUnknownMemberType]
+    plt.ylabel("Y") # pyright: ignore[reportUnknownMemberType]
+    plt.title("Particles inside Walls") # pyright: ignore[reportUnknownMemberType]
+    plt.show() # pyright: ignore[reportUnknownMemberType]
 
 if __name__ == "__main__":
     walls, particles = read_data("../resources/particles.txt")
