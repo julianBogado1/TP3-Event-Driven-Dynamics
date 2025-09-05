@@ -200,6 +200,6 @@ public class Particle {
 
     @Override
     public String toString() {
-        return String.format("%s, %s, %s", position, velocity, radius);
+        return String.format("%s %s %.14f", position, velocity, radius);
     }
 }

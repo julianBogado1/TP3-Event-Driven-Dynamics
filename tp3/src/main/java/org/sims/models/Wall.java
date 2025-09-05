@@ -77,6 +77,6 @@ public class Wall {
 
     @Override
     public String toString() {
-        return String.format("%s, %s", vertex1, vertex2);
+        return String.format("%s %s", vertex1, vertex2);
     }
 }

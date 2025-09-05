@@ -87,6 +87,6 @@ public class Vector {
 
     @Override
     public String toString() {
-        return String.format("(%s, %s)", x, y);
+        return String.format("%.14f %.14f", x, y);
     }
 }
