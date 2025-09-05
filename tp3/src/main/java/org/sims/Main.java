@@ -7,7 +7,7 @@ import org.sims.models.Wall;
 import java.util.concurrent.Executors;
 
 public class Main {
-    private static final int ANIMATION_INTERVAL = 1;
+    private static final int ANIMATION_INTERVAL = 5;
 
     public static void main(String[] args) throws Exception {
         final var walls = Wall.generate(0.07);
