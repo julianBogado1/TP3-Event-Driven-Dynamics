@@ -45,14 +45,18 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls)
         @Override
         public Iterator<Step> iterator() {
             return new Iterator<Step>() {
+                private List<Particle> particles = List.copyOf(simulation.particles());
+                private long current = 0;
+
                 @Override
                 public boolean hasNext() {
-                    return false;
+                    return current < simulation.steps();
                 }
 
                 @Override
                 public Step next() {
-                    return new Step(0, null, null);
+                    particles.parallelStream().forEach(Particle::move);
+                    return new Step(current++, List.copyOf(particles), null);
                 }
             };
         }
