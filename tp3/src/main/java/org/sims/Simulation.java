@@ -26,7 +26,7 @@ import org.sims.models.Wall;
  * }
  * </pre>
  */
-public record Simulator(long steps, List<Particle> particles, List<Wall> walls) {
+public record Simulation(long steps, List<Particle> particles, List<Wall> walls) {
     private static final RandomGenerator random = new SplittableRandom();
 
     /**
@@ -42,7 +42,7 @@ public record Simulator(long steps, List<Particle> particles, List<Wall> walls) 
         return new Engine(this, Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()));
     }
 
-    public record Engine(Simulator simulation, ExecutorService executor) implements Iterable<Step>, AutoCloseable {
+    public record Engine(Simulation simulation, ExecutorService executor) implements Iterable<Step>, AutoCloseable {
         @Override
         public Iterator<Step> iterator() {
             return new Iterator<Step>() {
