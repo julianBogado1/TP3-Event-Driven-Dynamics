@@ -33,8 +33,7 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls)
      * Creates a simulation engine that can be used to run the simulation
      *
      * @apiNote This engine uses a fixed thread pool with a number of threads equal
-     *          to the
-     *          number of available processors.
+     *          to the number of available processors.
      *
      * @return The simulation engine
      */
