@@ -10,9 +10,10 @@ public class Main {
         final var walls = Wall.generate(0.06);
         final var particles = Particle.generateInitialState(20, 0.3, 0.005);
 
-        try (final var writer = Resources.writer("walls.txt")) {
+        try (final var writer = Resources.writer("setup.txt")) {
+            writer.write("%d %.14f\n".formatted(particles.size(), 0.06));
             for (final var w : walls) {
-                writer.write(w.toString() + "\n");
+                writer.write("%s\n".formatted(w));
             }
         }
 
