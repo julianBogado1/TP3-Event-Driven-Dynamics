@@ -23,6 +23,24 @@ public class Particle {
         this.velocity = velocity;
     }
 
+    /**
+     * Move particle according to its velocity a delta time
+     *
+     * @param dt time step
+     */
+    private void move(double dt) {
+        setPosition(this.position.add(this.velocity.mult(dt)));
+    }
+
+    /**
+     * Move particle according to its velocity a delta time of 1
+     *
+     * @see #move(double)
+     */
+    public void move() {
+        move(1);
+    }
+
     public Vector getPosition() {
         return position;
     }
