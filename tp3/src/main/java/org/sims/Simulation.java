@@ -62,7 +62,7 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls)
         }
 
         @Override
-        public void close() throws Exception {
+        public void close() {
             executor.close();
         }
     }
@@ -70,6 +70,6 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls)
     public record Event(Particle a, Particle b, double time) {
     }
 
-    public record Step(long step, List<Particle> particles, List<Event> events) {
+    public record Step(long i, List<Particle> particles, List<Event> events) {
     }
 }
