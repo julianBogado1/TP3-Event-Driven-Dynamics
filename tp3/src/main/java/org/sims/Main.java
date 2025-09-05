@@ -10,17 +10,19 @@ public class Main {
         final var walls = Wall.generate(0.06);
         final var particles = Particle.generateInitialState(20, 0.3, 0.005);
 
-        try (final var writer = Resources.writer("particles.txt")) {
-            writer.write("Walls:\n");
-            for (final var w : walls) {
-                writer.write(w.toString() + "\n");
-            }
+        final var writer = Resources.writer("particles.txt");
 
-            writer.write("Particles:\n");
-            for (final var p : particles) {
-                writer.write(p.toString() + "\n");
-            }
+        writer.write("Walls:\n");
+        for (final var w : walls) {
+            writer.write(w.toString() + "\n");
         }
+
+        writer.write("Particles:\n");
+        for (final var p : particles) {
+            writer.write(p.toString() + "\n");
+        }
+
+        writer.close();
     }
 
     // TODO wall generator that checks closed polygon
