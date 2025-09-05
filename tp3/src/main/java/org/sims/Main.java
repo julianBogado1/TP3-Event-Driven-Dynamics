@@ -19,17 +19,17 @@ public class Main {
         Resources.preparePath("steps");
 
         final var sim = new Simulation(100, particles, walls);
-        try (final var engine = sim.engine(); final var writer = Executors.newSingleThreadExecutor()) {
+        try (final var engine = sim.engine(); final var executor = Executors.newSingleThreadExecutor()) {
             for (final var step : engine) {
                 final var i = step.i();
 
                 if (i % 5 == 0) {
-                    writer.submit(() -> {
-                        final var filename = "step_%03d.txt".formatted(i / 5);
+                    executor.submit(() -> {
+                        final var filename = "%d.txt".formatted(i / 5);
 
-                        try (final var step_writer = Resources.writer("steps", filename)) {
+                        try (final var writer = Resources.writer("steps", filename)) {
                             for (final var p : step.particles()) {
-                                step_writer.write(p.toString() + "\n");
+                                writer.write(p.toString() + "\n");
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
