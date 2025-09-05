@@ -7,6 +7,8 @@ import org.sims.models.Wall;
 import java.util.concurrent.Executors;
 
 public class Main {
+    private static final int ANIMATION_INTERVAL = 1;
+
     public static void main(String[] args) throws Exception {
         final var walls = Wall.generate(0.06);
         final var particles = Particle.generateInitialState(20, 0.01, 0.005);
@@ -26,7 +28,7 @@ public class Main {
             executor.submit(new Animator(engine.initial()));
 
             for (final var step : engine) {
-                if (step.i() % 5 == 0) {
+                if (step.i() % ANIMATION_INTERVAL == 0) {
                     executor.submit(new Animator(step));
                 }
             }
@@ -36,7 +38,7 @@ public class Main {
     private static record Animator(Step step) implements Runnable {
         @Override
         public void run() {
-            final var filename = "%d.txt".formatted(step.i() / 5);
+            final var filename = "%d.txt".formatted(step.i() / ANIMATION_INTERVAL);
             try (final var writer = Resources.writer("steps", filename)) {
                 for (final var p : step.particles()) {
                     writer.write(p.toString() + "\n");
