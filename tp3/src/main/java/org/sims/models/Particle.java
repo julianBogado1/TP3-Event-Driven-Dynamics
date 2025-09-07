@@ -89,7 +89,7 @@ public class Particle {
         return walls.parallelStream().map(w -> w.collidesWith(this)).min(Double::compareTo).orElse(Double.POSITIVE_INFINITY);
     }
 
-    private static final double MAGIC_NUMBER = 0.09;
+    private static final double MAGIC_NUMBER = 90;
 
     /**
      * Generates initial list of particles with random positions and radii
@@ -100,7 +100,7 @@ public class Particle {
      * @return true if valid position
      */
     public static List<Particle> generateInitialState(int numParticles, double startingVelocity, double radius) {
-        final List<Wall> walls = Wall.generate(0.05);
+        final List<Wall> walls = Wall.generate(50);
         final List<Particle> particles = new ArrayList<>(numParticles);
 
         for (int i = 0; i < numParticles; i++) {
@@ -140,8 +140,8 @@ public class Particle {
         // Check if particle center plus radius is within the bounded area formed by walls
         // For a rectangular boundary, we need to ensure the particle doesn't go outside
 
-        double minX = 0.0, maxX = 0.09;
-        double minY = 0.0, maxY = 0.09;
+        double minX = 0.0, maxX = 90;
+        double minY = 0.0, maxY = 90;
 
         System.out.println("particle: " + p);
         System.out.println("MinX: " + minX + " MaxX: " + maxX + "MinY:  " + minY + "MaxY:  " + maxY);

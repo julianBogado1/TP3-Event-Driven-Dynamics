@@ -19,17 +19,17 @@ public class Wall {
      * @return collision time
      */
     public static List<Wall> generate(double L) {
-        final double lilCorner = (0.09 - L) / 2.0;
+        final double lilCorner = (90 - L) / 2.0;
         final List<Wall> walls = new ArrayList<>(8);
 
-        walls.add(new Wall(new Vector(0, 0), new Vector(0.09, 0)));
-        walls.add(new Wall(new Vector(0.09, 0), new Vector(0.09, lilCorner)));
-        walls.add(new Wall(new Vector(0.09, lilCorner), new Vector(0.18, lilCorner)));
-        walls.add(new Wall(new Vector(0.18, lilCorner), new Vector(0.18, lilCorner + L)));
-        walls.add(new Wall(new Vector(0.18, lilCorner + L), new Vector(0.09, lilCorner + L)));
-        walls.add(new Wall(new Vector(0.09, lilCorner + L), new Vector(0.09, 0.09)));
-        walls.add(new Wall(new Vector(0.09, 0.09), new Vector(0, 0.09)));
-        walls.add(new Wall(new Vector(0, 0.09), new Vector(0, 0)));
+        walls.add(new Wall(new Vector(0, 0), new Vector(90, 0)));
+        walls.add(new Wall(new Vector(90, 0), new Vector(90, lilCorner)));
+        walls.add(new Wall(new Vector(90, lilCorner), new Vector(180, lilCorner)));
+        walls.add(new Wall(new Vector(180, lilCorner), new Vector(180, lilCorner + L)));
+        walls.add(new Wall(new Vector(180, lilCorner + L), new Vector(90, lilCorner + L)));
+        walls.add(new Wall(new Vector(90, lilCorner + L), new Vector(90, 90)));
+        walls.add(new Wall(new Vector(90, 90), new Vector(0, 90)));
+        walls.add(new Wall(new Vector(0, 90), new Vector(0, 0)));
 
         return walls;
     }

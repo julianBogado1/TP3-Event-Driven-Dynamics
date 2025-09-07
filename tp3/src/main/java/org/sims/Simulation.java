@@ -18,7 +18,7 @@ import org.sims.models.Wall;
  *
  * <pre>
  * {@code
- * final var sim = new Simulation(1000, Particle.generateInitialState(100, 0.01, 0.002), Wall.generate(0.05));
+ * final var sim = new Simulation(1000, Particle.generateInitialState(100, 10, 2), Wall.generate(50));
  * try (final var engine = sim.engine()) {
  *     for (final var step : engine) {
  *         // Process each step of the simulation
