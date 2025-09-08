@@ -101,7 +101,7 @@ public class Particle {
      *
      * @return smallest collision time
      */
-    public double collisionTimeWithWalls(final List<Wall> walls) {
+    public double collisionTime(final List<Wall> walls) {
         return walls.parallelStream().map(w -> w.collidesWith(this)).min(Double::compareTo).orElse(Double.POSITIVE_INFINITY);
     }
 
