@@ -33,8 +33,7 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls)
      * Creates a simulation engine that can be used to run the simulation
      *
      * @apiNote This engine uses a fixed thread pool with a number of threads equal
-     *          to the
-     *          number of available processors.
+     *          to the number of available processors.
      *
      * @return The simulation engine
      */
@@ -43,23 +42,31 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls)
     }
 
     public record Engine(Simulation simulation, ExecutorService executor) implements Iterable<Step>, AutoCloseable {
+        public Step initial() {
+            return new Step(0, List.copyOf(simulation.particles()), null);
+        }
+
         @Override
         public Iterator<Step> iterator() {
             return new Iterator<Step>() {
+                private List<Particle> particles = List.copyOf(simulation.particles());
+                private long current = 0;
+
                 @Override
                 public boolean hasNext() {
-                    return false;
+                    return current < simulation.steps();
                 }
 
                 @Override
                 public Step next() {
-                    return new Step(0, null, null);
+                    particles.parallelStream().forEach(Particle::move);
+                    return new Step(++current, List.copyOf(particles), null);
                 }
             };
         }
 
         @Override
-        public void close() throws Exception {
+        public void close() {
             executor.close();
         }
     }
@@ -67,6 +74,6 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls)
     public record Event(Particle a, Particle b, double time) {
     }
 
-    public record Step(long step, List<Particle> particles, List<Event> events) {
+    public record Step(long i, List<Particle> particles, List<Event> events) {
     }
 }

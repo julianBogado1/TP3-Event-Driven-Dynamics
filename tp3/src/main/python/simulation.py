@@ -1,63 +1,71 @@
 import matplotlib.pyplot as plt
-import re
+from matplotlib.patches import Circle
+from matplotlib.animation import FuncAnimation
 
-def read_data(filename):
-    walls = []
-    particles = []
-    with open(filename, "r") as f:
-        lines = f.readlines()
+from tqdm import tqdm
 
-    mode = None
-    for line in lines:
-        line = line.strip()
-        if not line:
-            continue
+import frames
+import resources
+from streaming import SequentialStreamingExecutor as Executor
 
-        if line.startswith("Walls:"):
-            mode = "walls"
-            continue
-        elif line.startswith("Particles:"):
-            mode = "particles"
-            continue
+from classes.wall import Wall
+from classes.particle import Particle
 
-        if mode == "walls":
-            # Match two points: (x1, y1), (x2, y2)
-            matches = re.findall(r"\(([^,]+), ([^)]+)\)", line)
-            if matches and len(matches) == 2:
-                (x1, y1), (x2, y2) = matches
-                walls.append(((float(x1), float(y1)), (float(x2), float(y2))))
+abar = None
+def main():
+    global abar
 
-        elif mode == "particles":
-            # Match: (x, y), (vx, vy), r
-            matches = re.findall(r"\(([^,]+), ([^)]+)\)", line)
-            radius_match = re.findall(r", ([0-9.]+)$", line)
-            if matches and len(matches) >= 1 and radius_match:
-                (x, y) = matches[0]
-                r = float(radius_match[0])
-                particles.append((float(x), float(y), r))
+    with open(resources.path("setup.txt")) as f:
+        count, _ = [*map(float, f.readline().strip().split())]
+        count = int(count)
 
-    return walls, particles
+        walls = [Wall(*map(float, line.strip().split())) for line in f]
 
+    executor = Executor(frames.next, frames.count())
 
-def plot_scene(walls, particles):
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots() # pyright: ignore[reportUnknownMemberType]
+    ax.set_aspect('equal', adjustable="box")
 
-    # Draw walls
-    for (x1, y1), (x2, y2) in walls:
-        ax.plot([x1, x2], [y1, y2], color="black")
+    for wall in walls:
+        ax.plot([wall.start.x, wall.end.x], [wall.start.y, wall.end.y], color="black") # pyright: ignore[reportUnknownMemberType]
 
-    # Draw particles
-    for x, y, r in particles:
-        circle = plt.Circle((x, y), r, color="blue", alpha=0.6)
-        ax.add_patch(circle)
+    circles: list[Circle] = []
+    for _ in range(count):
+        c = Circle((0, 0), radius=0, color="blue")
+        ax.add_patch(c)
+        circles.append(c)
 
-    ax.set_aspect("equal", adjustable="box")
-    plt.xlabel("X")
-    plt.ylabel("Y")
-    plt.title("Particles inside Walls")
-    plt.show()
+    def update(particles: list[Particle]):
+        global abar
 
+        if abar is not None and abar.n % abar.total == 0:
+            abar.reset()
+
+        for i, particle in enumerate(particles):
+            circles[i].center = particle.position.tuple()
+            circles[i].radius = particle.radius
+
+        if abar is not None:
+            abar.update()
+
+        return circles
+
+    ani = FuncAnimation( # pyright: ignore[reportUnusedVariable]
+        fig,
+        update,
+        frames=executor.stream(),
+        save_count=frames.count(),
+        interval=5,
+        blit=True,
+        repeat=True
+    )
+
+    if True:
+        abar = tqdm(total=frames.count())
+        plt.show() # pyright: ignore[reportUnknownMemberType]
+        abar.close()
+
+    plt.show() # pyright: ignore[reportUnknownMemberType]
 
 if __name__ == "__main__":
-    walls, particles = read_data("../resources/particles.txt")
-    plot_scene(walls, particles)
+    main()
