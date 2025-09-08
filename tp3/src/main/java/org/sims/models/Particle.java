@@ -8,14 +8,27 @@ import java.util.List;
 import java.util.Objects;
 
 public class Particle {
+    private static long SERIAL = 0L;
+    private final long ID;
+
     private Vector position;
     private Vector velocity;
     private double radius;
 
     public Particle(Vector position, Vector velocity, double radius) {
+        this.ID = SERIAL++;
         this.radius = radius;
         this.position = position;
         this.velocity = velocity;
+    }
+
+    /**
+     * Get unique ID of the particle
+     *
+     * @return ID of the particle
+     */
+    public long getID() {
+        return ID;
     }
 
     public Vector getVelocity() {
