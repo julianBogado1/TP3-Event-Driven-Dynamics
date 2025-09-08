@@ -2,12 +2,8 @@ package org.sims;
 
 import org.sims.Simulation.Step;
 import org.sims.models.Particle;
-import org.sims.models.Vector;
 import org.sims.models.Wall;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.concurrent.Executors;
 
 public class Main {
