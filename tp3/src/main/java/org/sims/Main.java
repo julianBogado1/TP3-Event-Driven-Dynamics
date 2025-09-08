@@ -4,12 +4,17 @@ import org.sims.models.Particle;
 import org.sims.models.Vector;
 import org.sims.models.Wall;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         final var walls = Wall.generate(0.06);
         final var particles = Particle.generateInitialState(20, 0.3, 0.005);
+        BufferedWriter bw = new BufferedWriter(new FileWriter("./src/main/resources/walls.txt"));
+
+
         // Test cases
         runTest(
                 new Particle(new Vector(0, 0), new Vector(1, 0), 1),
