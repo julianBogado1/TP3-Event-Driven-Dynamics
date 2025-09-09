@@ -66,7 +66,7 @@ def main():
 
     if True:
         abar = tqdm(total=frames.count())
-        plt.show() # pyright: ignore[reportUnknownMemberType]
+        # plt.show() # pyright: ignore[reportUnknownMemberType]
         abar.close()
 
     if True:        

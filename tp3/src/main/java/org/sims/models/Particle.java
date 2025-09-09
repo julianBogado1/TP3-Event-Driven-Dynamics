@@ -94,9 +94,9 @@ public class Particle {
      * @param p description of the parameter
      * @return time of collision from now -> infinity if particles dont collide
      */
-    public double collisionTime(final Particle p) {
+    public ParticleCollision collisionTime(final Particle p) {
         if (p == this) {
-            return Double.POSITIVE_INFINITY;
+            return new ParticleCollision(this, p,Double.POSITIVE_INFINITY);
         }
 
         final double relativeVelocityX = p.velocity.getX() - this.velocity.getX();
@@ -113,10 +113,10 @@ public class Particle {
                         (relativePosition.dot(relativePosition) - sigma * sigma);
 
         if (d < 0 || relativeVelocity.dot(relativePosition) >= 0) {
-            return Double.POSITIVE_INFINITY;
+            return new ParticleCollision(this, p, Double.POSITIVE_INFINITY);
         }
 
-        return -(relativeVelocity.dot(relativePosition) + Math.sqrt(d)) / relativeVelocity.dot(relativeVelocity);
+        return new ParticleCollision(this, p,-(relativeVelocity.dot(relativePosition) + Math.sqrt(d)) / relativeVelocity.dot(relativeVelocity));
     }
 
     /**
@@ -124,8 +124,8 @@ public class Particle {
      *
      * @return smallest collision time
      */
-    public double collisionTime(final Wall wall) {
-        return wall.collidesWith(this);
+    public WallCollision collisionTime(final Wall wall) {
+        return new WallCollision(this, wall,wall.collidesWith(this));
     }
 
     private static final double MAGIC_NUMBER = 0.09;
@@ -217,53 +217,6 @@ public class Particle {
         }
 
         return true; // No overlap
-    }
-
-
-
-    private static double ct = 1, cn = 1;
-    /**
-     * Changes velocities of the particles received
-     * @param p first particle
-     * @param other second particle
-     */
-    public static void collide(Particle p, Particle other) {
-        Vector normalVersor = Vector.subtract(p.getPosition(), other.getPosition());
-        Vector xVersor = new Vector(1,0);
-        double alpha = Vector.angle(normalVersor, xVersor);    //angle between normal versor of collision and x axis
-        double cosAlpha = Math.cos(alpha);
-        double sinAlpha = Math.sin(alpha);
-        double m11 = (-cn * cosAlpha*cosAlpha) + (ct * sinAlpha*sinAlpha);
-        double m12 = -(cn+ct)*sinAlpha*cosAlpha;
-        double m21 = m12;
-        double m22 = (-cn * sinAlpha*sinAlpha) + (ct * cosAlpha*cosAlpha);
-        double[][] m = new double[][]{  {m11, m12},
-                                        {m21, m22} };
-        RealMatrix collisionOperator = MatrixUtils.createRealMatrix(m);
-
-        //=======First particle=======
-        RealMatrix v1 = MatrixUtils.createRealMatrix(p.getVelocity().toColumnMatrix());
-        double[] v1Prime = collisionOperator.multiply(v1).getColumn(0);
-        p.setVelocity(new Vector(v1Prime[0], v1Prime[1]));
-
-        //=======Second particle=====
-        RealMatrix v2 = MatrixUtils.createRealMatrix(other.getVelocity().toColumnMatrix());
-        double[] v2Prime = collisionOperator.multiply(v2).getColumn(0);
-        other.setVelocity(new Vector(v2Prime[0], v2Prime[1]));
-
-        p.addEvent();
-        other.addEvent();
-    }
-
-    public static void collide(Particle p, Wall w) {
-        if(w.getVertex1().getX()-w.getVertex2().getX()<=0){ //horizontal wall
-            p.setVelocity(new Vector(p.getVelocity().getX(), -p.getVelocity().getY()));
-        }
-        else if(w.getVertex1().getY()-w.getVertex2().getY()<=0){ //vertical wall
-            p.setVelocity(new Vector(-p.getVelocity().getX(), p.getVelocity().getY()));
-        }
-
-        p.addEvent();
     }
 
 
