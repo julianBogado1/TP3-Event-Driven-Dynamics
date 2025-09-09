@@ -2,6 +2,7 @@ package org.sims;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.stream.Stream;
@@ -56,13 +57,8 @@ public record Engine(Simulation simulation) implements Iterable<Step> {
      * @param queue  Queue to add computed events to
      * @return List of tasks
      */
-    private void calculateEvents(final Stream<Particle> stream, double dt, final Queue<Event> queue) {
-        stream
-                .map(p -> simulation.collideables().parallelStream()
-                        .map(c -> new Event(p, c, c.collisionTime(p)))
-                        .min(Event::compareTo)
-                        .orElse(null))
-                .forEach(e -> queue.add(e));
+    private void calculateEvents(final Stream<Particle> stream, final double dt, final Queue<Event> queue) {
+        stream.map(p -> nextEvent(p, dt)).filter(Objects::nonNull).forEach(e -> queue.add(e));
     }
 
     /**
@@ -73,5 +69,12 @@ public record Engine(Simulation simulation) implements Iterable<Step> {
      */
     private void calculateEvents(final Queue<Event> queue) {
         calculateEvents(simulation.particles().parallelStream(), 0.0, queue);
+    }
+
+    private Event nextEvent(final Particle p, final double dt) {
+        return simulation.collideables().parallelStream()
+                .map(c -> new Event(p, c, c.collisionTime(p) + dt))
+                .min(Event::compareTo)
+                .orElse(null);
     }
 }
