@@ -128,6 +128,6 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls,
         return true; // No overlap
     }
 
-    public record Step(long i, List<Particle> particles, List<Event> events) {
+    public record Step(long i, List<Particle> particles, Event event) {
     }
 }

@@ -1,7 +1,6 @@
 package org.sims;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -32,18 +31,15 @@ public record Engine(Simulation simulation) implements Iterable<Step> {
 
             @Override
             public Step next() {
-                final var events = new LinkedList<Event>();
                 final var event = queue.poll();
 
                 moveTo(event);
                 time = event.time();
 
                 Particle.collide(event.p(), event.c());
-                events.add(event.clone());
-
                 calculateEvents(event.involved(), time, queue);
 
-                return new Step(++current, Particle.deepCopy(particles), List.copyOf(events));
+                return new Step(++current, Particle.deepCopy(particles), event.clone());
             }
 
             private void moveTo(final Event e) {
