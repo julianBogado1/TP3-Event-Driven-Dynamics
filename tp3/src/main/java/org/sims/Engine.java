@@ -35,7 +35,7 @@ public record Engine(Simulation simulation) implements Iterable<Step> {
                 final var events = new LinkedList<Event>();
                 final var event = queue.poll();
 
-                moveAll(event.time() - time /* Time-Skip */);
+                moveTo(event);
                 time = event.time();
 
                 Particle.collide(event.p(), event.c());
@@ -46,8 +46,8 @@ public record Engine(Simulation simulation) implements Iterable<Step> {
                 return new Step(++current, Particle.deepCopy(particles), List.copyOf(events));
             }
 
-            private void moveAll(final double dt) {
-                particles.parallelStream().forEach(p -> p.move(dt));
+            private void moveTo(final Event e) {
+                particles.parallelStream().forEach(p -> p.move(e.time() - time));
             }
         };
     }
