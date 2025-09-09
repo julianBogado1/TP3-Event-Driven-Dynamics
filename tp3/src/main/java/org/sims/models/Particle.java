@@ -14,6 +14,7 @@ public class Particle {
     private Vector position;
     private Vector velocity;
     private double radius;
+    private long events = 0;
 
     public Particle(Vector position, Vector velocity, double radius) {
         this.ID = SERIAL++;
@@ -44,7 +45,7 @@ public class Particle {
      *
      * @param dt time step
      */
-    private void move(double dt) {
+    public void move(double dt) {
         setPosition(this.position.add(this.velocity.mult(dt)));
     }
 
@@ -55,6 +56,14 @@ public class Particle {
      */
     public void move() {
         move(0.001);
+    }
+
+    public long getEvents() {
+        return events;
+    }
+
+    private void addEvent() {
+        this.events++;
     }
 
     public Vector getPosition() {
@@ -231,6 +240,9 @@ public class Particle {
         RealMatrix v2 = MatrixUtils.createRealMatrix(other.getVelocity().toColumnMatrix());
         double[] v2Prime = collisionOperator.multiply(v2).getColumn(0);
         other.setVelocity(new Vector(v2Prime[0], v2Prime[1]));
+
+        p.addEvent();
+        other.addEvent();
     }
 
     public static void collide(Particle p, Wall w) {
@@ -240,6 +252,8 @@ public class Particle {
         else if(w.getVertex1().getY()-w.getVertex2().getY()<=0){ //vertical wall
             p.setVelocity(new Vector(-p.getVelocity().getX(), p.getVelocity().getY()));
         }
+
+        p.addEvent();
     }
 
 
