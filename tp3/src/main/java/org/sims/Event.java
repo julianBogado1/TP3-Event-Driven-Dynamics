@@ -1,57 +1,41 @@
 package org.sims;
 
+import java.util.stream.Stream;
+
+import org.sims.models.Collideable;
 import org.sims.models.Particle;
-import org.sims.models.Wall;
 
-public record Event(Particle p1, Particle p2, Wall w, double time, long etag)
+public record Event(Particle p, Collideable c, double time, long etag)
         implements Comparable<Event>, Cloneable {
-    /**
-     * Creates a particle-particle collision event
-     *
-     * @param p1   The first particle
-     * @param p2   The second particle
-     * @param time The absolute time of the event
-     */
-    public Event(final Particle p1, final Particle p2, double time) {
-        this(p1, p2, null, time, Event.etag(p1, p2));
-    }
-
-    /**
-     * Creates a particle-wall collision event
-     *
-     * @param p1   The particle
-     * @param w    The wall
-     * @param time The absolute time of the event
-     */
-    public Event(final Particle p1, final Wall w, double time) {
-        this(p1, null, w, time, Event.etag(p1, null));
+    public Event(Particle p, Collideable c, double time) {
+        this(p, c, time, Event.etag(p, c));
     }
 
     /**
      * Generates an event tag based on the number of events each particle has
      *
-     * @param a A particle
-     * @param b Another particle (or null)
+     * @param p A particle
+     * @param c A collideable
      * @return The event tag
      */
-    private static long etag(final Particle a, final Particle b) {
-        var etag = a.getEvents();
-        if (b != null) {
-            etag += b.getEvents();
+    private static long etag(final Particle p, final Collideable c) {
+        var etag = p.getEvents();
+        if (c instanceof Particle p2) {
+            etag += p2.getEvents();
         }
         return etag;
     }
 
-    public boolean isWallCollision() {
-        return w != null;
-    }
-
-    public boolean isParticleCollision() {
-        return p2 != null;
-    }
-
     public boolean valid(double currentTime) {
-        return this.time >= currentTime && this.etag == Event.etag(p1, p2);
+        return this.time >= currentTime && this.etag == Event.etag(p, c);
+    }
+
+    public Stream<Particle> involved() {
+        if (c instanceof Particle p2) {
+            return Stream.of(p, p2);
+        }
+
+        return Stream.of(p);
     }
 
     @Override
@@ -61,6 +45,6 @@ public record Event(Particle p1, Particle p2, Wall w, double time, long etag)
 
     @Override
     public Event clone() {
-        return new Event(new Particle(p1), p2 != null ? new Particle(p2) : null, w, time, etag);
+        return new Event(new Particle(p), c.clone(), time, etag);
     }
 }

@@ -1,21 +1,16 @@
 package org.sims;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Queue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.stream.Stream;
 
 import org.sims.Simulation.Step;
 import org.sims.models.Particle;
-import org.sims.models.Wall;
 
-public record Engine(Simulation simulation, ExecutorService executor) implements Iterable<Step>, AutoCloseable {
+public record Engine(Simulation simulation) implements Iterable<Step> {
     public Step initial() {
         return new Step(0, List.copyOf(simulation.particles()), null);
     }
@@ -28,6 +23,7 @@ public record Engine(Simulation simulation, ExecutorService executor) implements
         return new Iterator<Step>() {
             private List<Particle> particles = List.copyOf(simulation.particles());
             private long current = 0;
+            private double time = 0.0;
 
             @Override
             public boolean hasNext() {
@@ -38,48 +34,30 @@ public record Engine(Simulation simulation, ExecutorService executor) implements
             public Step next() {
                 final var events = new LinkedList<Event>();
 
-                var dt = current * 0.01;
-                final var end_dt = dt + 0.01;
-
-                while (!queue.isEmpty() && queue.peek().time() <= end_dt) {
-                    final var event = queue.poll();
-
-                    if (!event.valid(dt)) {
-                        continue;
-                    }
-
-                    moveAll(event.time() - dt /* Time-Skip */);
-                    dt = event.time();
-
-                    if (event.isWallCollision()) {
-                        Particle.collide(event.p1(), event.w());
-                    } else {
-                        Particle.collide(event.p1(), event.p2());
-                    }
-
-                    events.add(event.clone());
-
-                    final var involved = Stream.of(event.p1(), event.p2());
-                    calculateEvents(involved, dt, queue);
+                while (!queue.isEmpty() && !queue.peek().valid(current)) {
+                    queue.poll();
                 }
+
+                final var event = queue.poll();
+
+                moveAll(event.time() - time /* Time-Skip */);
+                time = event.time();
+
+                Particle.collide(event.p(), event.c());
+
+                events.add(event.clone());
+
+                calculateEvents(event.involved(), time, queue);
 
                 if (queue.isEmpty()) {
                     throw new IllegalStateException("No more events to process");
                 }
 
-                moveAll(end_dt - dt /* Remainder of time */);
-
-                return new Step(++current, deepCopy(particles), List.copyOf(events));
+                return new Step(++current, Particle.deepCopy(particles), List.copyOf(events));
             }
 
             private void moveAll(final double dt) {
-                particles.stream().forEach(p -> p.move(dt));
-            }
-
-            private List<Particle> deepCopy(final List<Particle> particles) {
-                final var copy = new ArrayList<Particle>(particles.size());
-                particles.forEach(p -> copy.add(new Particle(p)));
-                return copy;
+                particles.parallelStream().forEach(p -> p.move(dt));
             }
         };
     }
@@ -93,20 +71,12 @@ public record Engine(Simulation simulation, ExecutorService executor) implements
      * @return List of tasks
      */
     private void calculateEvents(final Stream<Particle> stream, double dt, final Queue<Event> queue) {
-        final var walls = simulation.walls();
-        final var particles = simulation.particles();
-
-        final var tasks = stream
-                .filter(Objects::nonNull)
-                .map(p -> Executors.callable(new ParticleCollider(p, particles, walls, dt, queue)))
-                .toList();
-
-        try {
-            executor.invokeAll(tasks);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("Simulation interrupted", e);
-        }
+        stream
+                .map(p -> simulation.collideables().parallelStream()
+                        .map(c -> new Event(p, c, c.collisionTime(p)))
+                        .min(Event::compareTo)
+                        .orElse(null))
+                .forEach(e -> queue.add(e));
     }
 
     /**
@@ -117,33 +87,5 @@ public record Engine(Simulation simulation, ExecutorService executor) implements
      */
     private void calculateEvents(final Queue<Event> queue) {
         calculateEvents(simulation.particles().parallelStream(), 0.0, queue);
-    }
-
-    @Override
-    public void close() {
-        executor.close();
-    }
-
-    /**
-     * A thread task to computes collision events for a single particle against a
-     * list of particles and walls, and adds them to the output queue.
-     */
-    private record ParticleCollider(Particle self, List<Particle> particles, List<Wall> walls, double dt,
-            Queue<Event> output)
-            implements Runnable {
-        @Override
-        public void run() {
-            particles.stream().forEach(p -> {
-                final var t = self.collisionTime(p);
-                if (t != Double.POSITIVE_INFINITY)
-                    output.add(new Event(self, p, t + dt));
-            });
-
-            walls.stream().forEach(w -> {
-                final var t = self.collisionTime(w);
-                if (t != Double.POSITIVE_INFINITY)
-                    output.add(new Event(self, w, t + dt));
-            });
-        }
     }
 }

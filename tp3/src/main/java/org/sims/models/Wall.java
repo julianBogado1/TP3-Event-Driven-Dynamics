@@ -3,7 +3,7 @@ package org.sims.models;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Wall {
+public class Wall implements Collideable {
     private final Vector vertex1;
     private final Vector vertex2;
 
@@ -17,6 +17,11 @@ public class Wall {
     }
     public Vector getVertex2() {
         return vertex2;
+    }
+
+    @Override
+    public Wall clone() {
+        return new Wall(vertex1, vertex2);
     }
 
     /**
@@ -47,7 +52,8 @@ public class Wall {
      * @param p particle to check collision with
      * @return collision time
      */
-    public double collidesWith(final Particle p) {
+    @Override
+    public double collisionTime(final Particle p) {
         final double pVelocity;
         final double pCurrentPos;
 

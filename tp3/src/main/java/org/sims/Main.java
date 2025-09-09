@@ -1,7 +1,6 @@
 package org.sims;
 
 import org.sims.Simulation.Step;
-import org.sims.models.Particle;
 import org.sims.models.Wall;
 
 import java.util.concurrent.Executors;
@@ -11,7 +10,7 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         final var walls = Wall.generate(0.07);
-        final var particles = Particle.generateInitialState(20, 0.007, 0.0015);
+        final var particles = Simulation.generateInitialState(20, 0.007, 0.0015);
 
         try (final var writer = Resources.writer("setup.txt")) {
             writer.write("%d %.14f\n".formatted(particles.size(), 0.06));
@@ -24,7 +23,9 @@ public class Main {
 
         System.out.println("Starting simulation...");
         final var sim = new Simulation(10_000, particles, walls);
-        try (final var engine = sim.engine(); final var executor = Executors.newSingleThreadExecutor()) {
+        final var engine = sim.engine();
+
+        try (final var executor = Executors.newSingleThreadExecutor()) {
             executor.submit(new Animator(engine.initial()));
 
             for (final var step : engine) {
