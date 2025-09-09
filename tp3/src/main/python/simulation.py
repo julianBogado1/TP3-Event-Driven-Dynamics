@@ -1,3 +1,7 @@
+from typing import Callable
+
+import time
+
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 from matplotlib.animation import FuncAnimation
@@ -65,7 +69,15 @@ def main():
         plt.show() # pyright: ignore[reportUnknownMemberType]
         abar.close()
 
-    plt.show() # pyright: ignore[reportUnknownMemberType]
+    if True:        
+        print("Saving animation...")
+
+        filename = resources.path(f"{int(time.time())}.mp4")
+        with tqdm(total=frames.count()) as sbar:
+            callback: Callable[[int, int], bool | None] = lambda _i, _n: sbar.update()
+            ani.save(filename, writer='ffmpeg', fps=60, dpi=300, progress_callback=callback)
+
+        print(f"Animation saved at {filename}")
 
 if __name__ == "__main__":
     main()
