@@ -22,6 +22,6 @@ public record Event(Particle p, Collideable c, double time)
 
     @Override
     public Event clone() {
-        return new Event(new Particle(p), c.clone(), time);
+        return new Event(p.clone(), c.clone(), time);
     }
 }
