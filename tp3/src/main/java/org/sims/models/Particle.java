@@ -23,6 +23,14 @@ public class Particle {
         this.velocity = velocity;
     }
 
+    public Particle(Particle p) {
+        this.ID = p.ID;
+        this.radius = p.radius;
+        this.position = p.position;
+        this.velocity = p.velocity;
+        this.events = p.events;
+    }
+
     /**
      * Get unique ID of the particle
      *
