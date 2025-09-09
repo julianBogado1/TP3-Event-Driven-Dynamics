@@ -76,6 +76,10 @@ public class Particle {
      * @return time of collision from now -> infinity if particles dont collide
      */
     public double collisionTime(final Particle p) {
+        if (p == this) {
+            return Double.POSITIVE_INFINITY;
+        }
+
         final double relativeVelocityX = p.velocity.getX() - this.velocity.getX();
         final double relativeVelocityY = p.velocity.getY() - this.velocity.getY();
         final double relativePositionX = p.position.getX() - this.position.getX();
