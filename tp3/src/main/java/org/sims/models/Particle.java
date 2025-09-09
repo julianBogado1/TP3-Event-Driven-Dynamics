@@ -105,10 +105,10 @@ public class Particle implements Collideable {
             return Double.POSITIVE_INFINITY;
         }
 
-        final double relativeVelocityX = p.velocity.getX() - this.velocity.getX();
-        final double relativeVelocityY = p.velocity.getY() - this.velocity.getY();
-        final double relativePositionX = p.position.getX() - this.position.getX();
-        final double relativePositionY = p.position.getY() - this.position.getY();
+        final double relativeVelocityX = p.velocity.x() - this.velocity.x();
+        final double relativeVelocityY = p.velocity.y() - this.velocity.y();
+        final double relativePositionX = p.position.x() - this.position.x();
+        final double relativePositionY = p.position.y() - this.position.y();
         final double sigma = this.radius + p.radius;
 
         final Vector relativeVelocity = new Vector(relativeVelocityX, relativeVelocityY);
@@ -177,11 +177,11 @@ public class Particle implements Collideable {
     }
 
     public static void collide(Particle p, Wall w) {
-        if(w.getVertex1().getX()-w.getVertex2().getX()<=0){ //horizontal wall
-            p.setVelocity(new Vector(p.getVelocity().getX(), -p.getVelocity().getY()));
+        if(w.getVertex1().x()-w.getVertex2().x()<=0){ //horizontal wall
+            p.setVelocity(new Vector(p.getVelocity().x(), -p.getVelocity().y()));
         }
-        else if(w.getVertex1().getY()-w.getVertex2().getY()<=0){ //vertical wall
-            p.setVelocity(new Vector(-p.getVelocity().getX(), p.getVelocity().getY()));
+        else if(w.getVertex1().y()-w.getVertex2().y()<=0){ //vertical wall
+            p.setVelocity(new Vector(-p.getVelocity().x(), p.getVelocity().y()));
         }
 
         p.addEvent();

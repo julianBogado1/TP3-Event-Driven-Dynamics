@@ -57,11 +57,11 @@ public class Wall implements Collideable {
         final double pVelocity;
         final double pCurrentPos;
 
-        if (Math.abs(vertex1.getX() - vertex2.getX()) < 0.00001) { // vertical wall
-            final double wallX = vertex1.getX();
+        if (Math.abs(vertex1.x() - vertex2.x()) < 0.00001) { // vertical wall
+            final double wallX = vertex1.x();
 
-            pVelocity = p.getVelocity().getX();
-            pCurrentPos = p.getPosition().getX(); // Use current position, not initial
+            pVelocity = p.getVelocity().x();
+            pCurrentPos = p.getPosition().x(); // Use current position, not initial
 
             if (pVelocity > 0 && wallX - p.getRadius() > pCurrentPos) {
                 return (wallX - p.getRadius() - pCurrentPos) / pVelocity;
@@ -70,11 +70,11 @@ public class Wall implements Collideable {
             }
 
             return Double.POSITIVE_INFINITY;
-        } else if (Math.abs(vertex1.getY() - vertex2.getY()) < 0.00001) { // horizontal wall
-            final double wallY = vertex1.getY();
+        } else if (Math.abs(vertex1.y() - vertex2.y()) < 0.00001) { // horizontal wall
+            final double wallY = vertex1.y();
 
-            pVelocity = p.getVelocity().getY();
-            pCurrentPos = p.getPosition().getY(); // Use current position, not initial
+            pVelocity = p.getVelocity().y();
+            pCurrentPos = p.getPosition().y(); // Use current position, not initial
 
             if (pVelocity > 0 && wallY - p.getRadius() > pCurrentPos) {
                 return (wallY - p.getRadius() - pCurrentPos) / pVelocity;

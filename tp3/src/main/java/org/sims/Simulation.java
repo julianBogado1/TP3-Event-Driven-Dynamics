@@ -96,16 +96,16 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls,
         System.out.println("particle: " + p);
         System.out.println("MinX: " + minX + " MaxX: " + maxX + "MinY:  " + minY + "MaxY:  " + maxY);
         System.out.println(
-                "Check X: " + ((pos.getX() - radius >= minX) &&
-                        (pos.getX() + radius <= maxX)) + " Check Y: "
-                        + ((pos.getY() - radius >= minY) &&
-                                (pos.getY() + radius <= maxY)));
+                "Check X: " + ((pos.x() - radius >= minX) &&
+                        (pos.x() + radius <= maxX)) + " Check Y: "
+                        + ((pos.y() - radius >= minY) &&
+                                (pos.y() + radius <= maxY)));
 
         // Check if particle (considering its radius) is within bounds
-        return (pos.getX() - radius >= minX) &&
-                (pos.getX() + radius <= maxX) &&
-                (pos.getY() - radius >= minY) &&
-                (pos.getY() + radius <= maxY);
+        return (pos.x() - radius >= minX) &&
+                (pos.x() + radius <= maxX) &&
+                (pos.y() - radius >= minY) &&
+                (pos.y() + radius <= maxY);
     }
 
     private static boolean checkNonOverlap(Particle p, List<Particle> particles) {
@@ -117,8 +117,8 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls,
             final double otherRadius = other.getRadius();
 
             // Calculate distance between particle centers
-            final double dx = pos.getX() - otherPos.getX();
-            final double dy = pos.getY() - otherPos.getY();
+            final double dx = pos.x() - otherPos.x();
+            final double dy = pos.y() - otherPos.y();
             final double distance = Math.sqrt(dx * dx + dy * dy);
 
             // Check if distance is less than sum of radii (overlap condition)
