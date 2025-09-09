@@ -52,6 +52,7 @@ public class Particle {
     /**
      * Move particle according to its velocity a delta time of 1
      *
+     * @deprecated use {@link #move(double)} instead
      * @see #move(double)
      */
     public void move() {
