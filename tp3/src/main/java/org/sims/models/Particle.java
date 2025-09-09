@@ -63,6 +63,7 @@ public class Particle {
      * @deprecated use {@link #move(double)} instead
      * @see #move(double)
      */
+    @Deprecated
     public void move() {
         move(0.001);
     }
