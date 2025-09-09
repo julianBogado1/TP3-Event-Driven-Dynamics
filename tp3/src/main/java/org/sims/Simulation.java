@@ -117,9 +117,7 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls,
             final double otherRadius = other.getRadius();
 
             // Calculate distance between particle centers
-            final double dx = pos.x() - otherPos.x();
-            final double dy = pos.y() - otherPos.y();
-            final double distance = Math.sqrt(dx * dx + dy * dy);
+            final double distance = pos.subtract(otherPos).norm();
 
             // Check if distance is less than sum of radii (overlap condition)
             if (distance < radius + otherRadius) {
