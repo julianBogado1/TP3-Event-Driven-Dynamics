@@ -2,15 +2,29 @@ package org.sims;
 
 import org.sims.Simulation.Step;
 import org.sims.models.Wall;
-
+import com.google.gson.Gson;
+import java.io.FileReader;
+import java.util.Map;
 import java.util.concurrent.Executors;
 
 public class Main {
     private static final int ANIMATION_INTERVAL = 5;
 
     public static void main(String[] args) throws Exception {
-        final var walls = Wall.generate(0.07);
-        final var particles = Simulation.generateInitialState(20, 0.007, 0.0015);
+
+        Gson gson = new Gson();
+
+        // Read JSON into a Map
+        Map<String, Number> data = gson.fromJson(new FileReader("src/main/resources/config.json"), Map.class);
+        double radius, velocity, L;
+        int N = data.get("particles").intValue();
+        radius = data.get("radius").doubleValue();
+        velocity = data.get("velocity").doubleValue();
+        L = data.get("L").doubleValue();
+
+
+        final var walls = Wall.generate(L);
+        final var particles = Simulation.generateInitialState(N, velocity, radius);
 
         try (final var writer = Resources.writer("setup.txt")) {
             writer.write("%d %.14f\n".formatted(particles.size(), 0.06));

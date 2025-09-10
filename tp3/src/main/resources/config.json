@@ -1,0 +1,6 @@
+{
+  "radius": 0.0015,
+  "velocity": 0.007,
+  "particles": 20,
+  "L": 0.07
+}
