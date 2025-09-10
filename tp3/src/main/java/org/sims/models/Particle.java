@@ -144,14 +144,16 @@ public class Particle {
 
         for (int i = 0; i < numParticles; i++) {
             boolean generated = false;
-            double x, y;
+            double xPos, yPos, xVel, yVel, theta;
             while (!generated) {
-                x = Math.random() * MAGIC_NUMBER;
-                y = Math.random() * MAGIC_NUMBER;
-                // radius = Math.random() * MAGIC_NUMBER;
+                xPos = Math.random() * MAGIC_NUMBER;
+                yPos = Math.random() * MAGIC_NUMBER;
 
-                // TODO random velocity direction??
-                final var p = new Particle(new Vector(x, y), new Vector(startingVelocity, startingVelocity), radius);
+                theta = Math.random() * 2 * Math.PI;
+                xVel = startingVelocity * Math.cos(theta);
+                yVel = startingVelocity * Math.sin(theta);
+
+                final var p = new Particle(new Vector(xPos, yPos), new Vector(xVel, yVel), radius);
                 if (checkValidPosition(p, walls) && checkNonOverlap(p, particles)) {
                     generated = true;
                     particles.add(p); // Add the particle to the list
