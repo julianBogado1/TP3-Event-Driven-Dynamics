@@ -122,7 +122,9 @@ public class Particle implements Collideable {
             return Double.POSITIVE_INFINITY;
         }
 
-        return -(relativeVelocity.dot(relativePosition) + Math.sqrt(d)) / relativeVelocity.dot(relativeVelocity);
+        double toReturn = -(relativeVelocity.dot(relativePosition) + Math.sqrt(d)) / relativeVelocity.dot(relativeVelocity);
+        System.out.println("Collision between " + this.getID() + " and " + p.getID() + " in time: " + toReturn);
+        return toReturn;
     }
 
     public static List<Particle> deepCopy(final List<Particle> particles) {
@@ -149,6 +151,9 @@ public class Particle implements Collideable {
      * @param other second particle
      */
     public static void collide(Particle p, Particle other) {
+        System.out.println("Collision between " + p.getID() + " and " + other.getID());
+        System.out.println("Before collision: " + p.getVelocity() + " and " + other.getVelocity());
+
         Vector normalVersor = Vector.subtract(p.getPosition(), other.getPosition());
         Vector xVersor = new Vector(1,0);
         double alpha = Vector.angle(normalVersor, xVersor);    //angle between normal versor of collision and x axis
@@ -174,9 +179,13 @@ public class Particle implements Collideable {
 
         p.addEvent();
         other.addEvent();
+
+        System.out.println("After collision: " + p.getVelocity() + " and " + other.getVelocity());
     }
 
     public static void collide(Particle p, Wall w) {
+        System.out.println("Collision between " + p.getID() + " and wall " + w);
+        System.out.println("Before collision: " + p.getVelocity());
         if(w.getVertex1().x()-w.getVertex2().x()<=0){ //horizontal wall
             p.setVelocity(new Vector(p.getVelocity().x(), -p.getVelocity().y()));
         }
@@ -185,6 +194,7 @@ public class Particle implements Collideable {
         }
 
         p.addEvent();
+        System.out.println("After collision: " + p.getVelocity());
     }
 
 

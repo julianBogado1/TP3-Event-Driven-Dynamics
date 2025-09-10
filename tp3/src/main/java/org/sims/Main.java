@@ -36,7 +36,7 @@ public class Main {
         Resources.preparePath("steps");
 
         System.out.println("Starting simulation...");
-        final var sim = new Simulation(10_000, particles, walls);
+        final var sim = new Simulation(200, particles, walls);
         final var engine = sim.engine();
 
         try (final var executor = Executors.newSingleThreadExecutor()) {

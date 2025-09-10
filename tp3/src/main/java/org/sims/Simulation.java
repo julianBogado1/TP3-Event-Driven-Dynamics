@@ -55,15 +55,23 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls,
 
         for (int i = 0; i < numParticles; i++) {
             boolean generated = false;
-            double x, y;
+            double xPos, yPos, xVel, yVel, theta;
             while (!generated) {
-                x = Math.random() * MAGIC_NUMBER;
-                y = Math.random() * MAGIC_NUMBER;
+                xPos = Math.random() * MAGIC_NUMBER;
+                yPos = Math.random() * MAGIC_NUMBER;
                 // radius = Math.random() * MAGIC_NUMBER;
 
-//                Vector randVelocity = Vector.createNormalized()
-                // TODO random velocity direction??
-                final var p = new Particle(new Vector(x, y), new Vector(startingVelocity, startingVelocity), radius);
+                //Formula for random direction and same magnitude:
+                // y = sqrt( cos(x)^2 + sin(x)^2 ) = 1 -> multiply by startingVelocity for desired magnitude
+                //then distribute constant
+                //y = sqrt( v^2 * ( cos(x)^2 + sin(x)^2 ) ) = v
+                //y = sqrt( v^2*cos^2 + v^2*sin^2 ))
+                theta = Math.random() * 2 * Math.PI;
+                xVel = Math.cos(theta);
+                yVel = Math.sin(theta);
+                Vector velocity = new Vector(xVel * startingVelocity, yVel * startingVelocity);
+
+                final var p = new Particle(new Vector(xPos, yPos), velocity, radius);
                 if (checkValidPosition(p, walls) && checkNonOverlap(p, particles)) {
                     generated = true;
                     particles.add(p); // Add the particle to the list
@@ -93,14 +101,6 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls,
 
         double minX = 0.0, maxX = 0.09;
         double minY = 0.0, maxY = 0.09;
-
-        System.out.println("particle: " + p);
-        System.out.println("MinX: " + minX + " MaxX: " + maxX + "MinY:  " + minY + "MaxY:  " + maxY);
-        System.out.println(
-                "Check X: " + ((pos.x() - radius >= minX) &&
-                        (pos.x() + radius <= maxX)) + " Check Y: "
-                        + ((pos.y() - radius >= minY) &&
-                                (pos.y() + radius <= maxY)));
 
         // Check if particle (considering its radius) is within bounds
         return (pos.x() - radius >= minX) &&
