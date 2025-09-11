@@ -6,8 +6,7 @@ import org.sims.models.*;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Executors;
 
 public class Main {
@@ -61,22 +60,33 @@ public class Main {
         }
 
         public void simulate() throws IOException {
-            Event event;
+//            Event event;
+            Queue<Event> event = new PriorityQueue<>();
             for(int i=0; i<steps; i++){
                 try (BufferedWriter writer = Resources.writer("steps", "%d.txt".formatted(i))) {
                     for (Particle p : particles) {
                         writer.write(p.toString() + "\n");
                     }
                 }
-                event = nextEvent(particles, walls);
-                double dt = event.collisionTime;
-                System.out.println("Step: "+i+" Time to next event: "+dt);
+                event = nextEvents(particles, walls);
+//                double dt = event.collisionTime;
+//                System.out.println("Step: "+i+" Time to next event: "+dt);
+                Event eventPeek = event.peek();
+                double dt = eventPeek.collisionTime;
                 for(Particle p: particles){
                     System.out.println("Particle: "+p);
                     p.move(dt);
                     System.out.println("Moved Particle: "+p);
                 }
-                event.execute();
+                while(!event.isEmpty()){
+                    Event e = event.poll();
+                    if(e.collisionTime - dt <= 0.00005){
+                        e.execute();
+                    }
+                    else{
+                        break;
+                    }
+                }
                 System.out.println("Executed event");
                 System.out.println("Collisioned particle: "+particles);
 
@@ -92,17 +102,20 @@ public class Main {
          * @param walls boundaries of the system
          * @return The next event to happen
          */
-        private Event nextEvent(List<Particle> particles, List<Wall> walls){
+        private Queue<Event> nextEvents(List<Particle> particles, List<Wall> walls){
             Event particleCollision = new ParticleCollision(null, null, Double.POSITIVE_INFINITY);
             Event wallCollision = new WallCollision(null, null, Double.POSITIVE_INFINITY);
+            PriorityQueue<Event> queue = new PriorityQueue<>((e1, e2)->{return Double.compare(e1.collisionTime, e2.collisionTime);});
             for(Particle p : particles){
                 for(Particle other:particles){
                     Event temp = p.collisionTime(other);
-                    if(temp.collisionTime< particleCollision.collisionTime){particleCollision = temp;}
+//                    if(temp.collisionTime< particleCollision.collisionTime){particleCollision = temp;}
+                    queue.add(temp);
                 }
                 for(Wall w : walls){
                     Event temp = p.collisionTime(w);
-                    if(temp.collisionTime< wallCollision.collisionTime){wallCollision = temp;}
+//                    if(temp.collisionTime< wallCollision.collisionTime){wallCollision = temp;}
+                    queue.add(temp);
                 }
                 if( ((WallCollision) wallCollision).getWall() == null){
 //                    System.out.println("######todos los tiempos de colision infinitos");
@@ -110,11 +123,11 @@ public class Main {
                 }
 
             }
-            Event tc =  (particleCollision.collisionTime < wallCollision.collisionTime) ? particleCollision : wallCollision;
+//            Event tc =  (particleCollision.collisionTime < wallCollision.collisionTime) ? particleCollision : wallCollision;
 //            WallCollision tc = (WallCollision) wallCollision;
 //            System.out.println("Collision time: "+tc.collisionTime);
 //            System.out.println("##Particle: "+tc.getParticle()+" Wall: "+tc.getWall());
-            return tc;
+            return queue;
         }
 
     }
