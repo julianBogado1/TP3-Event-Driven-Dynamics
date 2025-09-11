@@ -37,10 +37,6 @@ public record Engine(Simulation simulation) implements Iterable<Step> {
 
                 final var event = queue.poll();
 
-                if (event.time() == Double.POSITIVE_INFINITY) {
-                    System.err.println("Huh");
-                }
-
                 moveTo(event);
                 time = event.time();
 
