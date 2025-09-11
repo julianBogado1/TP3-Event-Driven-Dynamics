@@ -1,8 +1,5 @@
 package org.sims.models;
 
-import org.apache.commons.math3.linear.MatrixUtils;
-import org.apache.commons.math3.linear.RealMatrix;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
