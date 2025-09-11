@@ -116,24 +116,37 @@ public class Particle implements Collideable {
             return Double.POSITIVE_INFINITY;
         }
 
-        final double relativeVelocityX = p.velocity.x() - this.velocity.x();
-        final double relativeVelocityY = p.velocity.y() - this.velocity.y();
-        final double relativePositionX = p.position.x() - this.position.x();
-        final double relativePositionY = p.position.y() - this.position.y();
-        final double sigma = this.radius + p.radius;
+        final var rvel = p.velocity.subtract(this.velocity);
+        final var rpos = p.position.subtract(this.position);
+        
+        final var vel_pos = rvel.dot(rpos);
 
-        final Vector relativeVelocity = new Vector(relativeVelocityX, relativeVelocityY);
-        final Vector relativePosition = new Vector(relativePositionX, relativePositionY);
-
-        final double d = Math.pow(relativeVelocity.dot(relativePosition), 2) -
-                relativeVelocity.dot(relativeVelocity) *
-                        (relativePosition.dot(relativePosition) - sigma * sigma);
-
-        if (d < 0 || relativeVelocity.dot(relativePosition) >= 0) {
+        if (vel_pos > 0) {
             return Double.POSITIVE_INFINITY;
         }
 
-        return -(relativeVelocity.dot(relativePosition) + Math.sqrt(d)) / relativeVelocity.dot(relativeVelocity);
+        final var vel_vel = rvel.dot(rvel);
+        
+        if (vel_vel == 0) {
+            return Double.POSITIVE_INFINITY;
+        }
+
+        final var pos_pos = rpos.dot(rpos);
+        final var sigma = this.radius + p.radius;
+
+        final var d = vel_pos * vel_pos - vel_vel * (pos_pos - sigma * sigma);
+
+        if (d < 0) {
+            return Double.POSITIVE_INFINITY;
+        }
+
+        final var t = -(vel_pos + Math.sqrt(d)) / vel_vel;
+        
+        if (t < 0) {
+            return Double.POSITIVE_INFINITY;
+        }
+
+        return t;
     }
 
     public static List<Particle> deepCopy(final List<Particle> particles) {
