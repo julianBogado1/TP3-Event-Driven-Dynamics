@@ -18,6 +18,7 @@ public class Main {
             }
         }
 
+        System.out.println("Preparing folder output...");
         Resources.preparePath("steps");
 
         final var sim = new Simulation(100_000, particles, walls);
