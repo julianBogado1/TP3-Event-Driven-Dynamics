@@ -25,15 +25,19 @@ public class Main {
         final var engine = sim.engine();
 
         final var pb = new ProgressBar("Simulating", sim.steps());
+        final var timer = Resources.writer("events.txt");
+
         try (final var executor = Executors.newSingleThreadExecutor()) {
             executor.submit(new Animator(engine.initial()));
 
             for (final var step : engine) {
                 executor.submit(new Animator(step));
+                executor.submit(new Timer(step.event(), timer));
                 pb.step();
             }
         } finally {
             pb.close();
+            timer.close();
         }
     }
 
@@ -45,6 +49,17 @@ public class Main {
                 for (final var p : step.particles()) {
                     writer.write("%s\n".formatted(p));
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static record Timer(Event event, Appendable writer) implements Runnable {
+        @Override
+        public void run() {
+            try {
+                writer.append("%.14f\n".formatted(event.time()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
