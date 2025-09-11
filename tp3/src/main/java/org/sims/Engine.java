@@ -65,7 +65,7 @@ public record Engine(Simulation simulation) implements Iterable<Step> {
      * @return List of tasks
      */
     private void calculateEvents(final Stream<Particle> stream, final double dt, final Queue<Event> queue) {
-        stream.map(p -> nextEvent(p, dt)).forEach(e -> queue.addAll(e));
+        stream.map(p -> nextEvents(p, dt)).forEach(e -> queue.addAll(e));
     }
 
     /**
@@ -78,9 +78,10 @@ public record Engine(Simulation simulation) implements Iterable<Step> {
         calculateEvents(simulation.particles().parallelStream(), 0.0, queue);
     }
 
-    private List<Event> nextEvent(final Particle p, final double dt) {
+    private List<Event> nextEvents(final Particle p, final double dt) {
         return simulation.collideables().parallelStream()
                 .map(c -> new Event(p, c, c.collisionTime(p) + dt))
+                .filter(e -> e.time() < Double.POSITIVE_INFINITY)
                 .toList();
     }
 }
