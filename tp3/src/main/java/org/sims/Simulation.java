@@ -59,10 +59,12 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls,
             while (!generated) {
                 x = Math.random() * MAGIC_NUMBER;
                 y = Math.random() * MAGIC_NUMBER;
-                // radius = Math.random() * MAGIC_NUMBER;
 
-                // TODO random velocity direction??
-                final var p = new Particle(new Vector(x, y), new Vector(startingVelocity, startingVelocity), radius);
+                final var theta = Math.random() * 2 * Math.PI;
+                final var xVel = startingVelocity * Math.cos(theta);
+                final var yVel = startingVelocity * Math.sin(theta);
+
+                final var p = new Particle(new Vector(x, y), new Vector(xVel, yVel), radius);
                 if (checkValidPosition(p, walls) && checkNonOverlap(p, particles)) {
                     generated = true;
                     particles.add(p); // Add the particle to the list
