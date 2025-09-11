@@ -47,33 +47,67 @@ public class Wall {
      * @param p particle to check collision with
      * @return collision time
      */
-    public double collidesWith(final Particle p) {
-        final double pVelocity;
-        final double pCurrentPos;
+    public double collisionTime(final Particle p) {
+        final Vector pVelocity;
+        final Vector pCurrentPos;
 
         if (Math.abs(vertex1.getX() - vertex2.getX()) < 0.00001) { // vertical wall
             final double wallX = vertex1.getX();
 
-            pVelocity = p.getVelocity().getX();
-            pCurrentPos = p.getPosition().getX(); // Use current position, not initial
+            pVelocity = p.getVelocity();
+            pCurrentPos = p.getPosition(); // Use current position, not initial
 
-            if (pVelocity > 0 && wallX - p.getRadius() > pCurrentPos) {
-                return (wallX - p.getRadius() - pCurrentPos) / pVelocity;
-            } else if (pVelocity < 0 && wallX + p.getRadius() < pCurrentPos) {
-                return (wallX + p.getRadius() - pCurrentPos) / pVelocity;
+            final double toReturn;
+
+            if (wallX > pCurrentPos.getX() && pVelocity.getX() > 0) {
+                toReturn = (wallX - p.getRadius() - pCurrentPos.getX()) / pVelocity.getX();
+
+                if (toReturn < 0) {
+                    return Double.POSITIVE_INFINITY;
+                } else if(pCurrentPos.getY() + pVelocity.getY() * toReturn > Math.max(vertex1.getY(), vertex2.getY())
+                        || pCurrentPos.getY() + pVelocity.getY() * toReturn < Math.min(vertex1.getY(), vertex2.getY())) {
+                    
+                    return toReturn;
+                }
+            } else if (wallX < pCurrentPos.getX() && pVelocity.getX() < 0) {
+                toReturn = (wallX + p.getRadius() - pCurrentPos.getX()) / pVelocity.getX();
+
+                if (toReturn < 0) {
+                    return Double.POSITIVE_INFINITY;
+                } else if(pCurrentPos.getY() + pVelocity.getY() * toReturn > Math.max(vertex1.getY(), vertex2.getY())
+                        || pCurrentPos.getY() + pVelocity.getY() * toReturn < Math.min(vertex1.getY(), vertex2.getY())) {
+                    
+                    return toReturn;
+                }
             }
 
             return Double.POSITIVE_INFINITY;
         } else if (Math.abs(vertex1.getY() - vertex2.getY()) < 0.00001) { // horizontal wall
             final double wallY = vertex1.getY();
 
-            pVelocity = p.getVelocity().getY();
-            pCurrentPos = p.getPosition().getY(); // Use current position, not initial
+            pVelocity = p.getVelocity();
+            pCurrentPos = p.getPosition(); // Use current position, not initial
 
-            if (pVelocity > 0 && wallY - p.getRadius() > pCurrentPos) {
-                return (wallY - p.getRadius() - pCurrentPos) / pVelocity;
-            } else if (pVelocity < 0 && wallY + p.getRadius() < pCurrentPos) {
-                return (wallY + p.getRadius() - pCurrentPos) / pVelocity;
+            if (wallY > pCurrentPos.getY() && pVelocity.getY() > 0) {
+                final double toReturn = (wallY - p.getRadius() - pCurrentPos.getY()) / pVelocity.getY();
+
+                if (toReturn < 0) {
+                    return Double.POSITIVE_INFINITY;
+                } else if(pCurrentPos.getX() + pVelocity.getX() * toReturn > Math.max(vertex1.getX(), vertex2.getX())
+                        || pCurrentPos.getX() + pVelocity.getX() * toReturn < Math.min(vertex1.getX(), vertex2.getX())) {
+                    
+                    return toReturn;
+                }
+            } else if (wallY < pCurrentPos.getY() && pVelocity.getY() < 0) {
+                final double toReturn = (wallY + p.getRadius() - pCurrentPos.getY()) / pVelocity.getY();
+
+                if (toReturn < 0) {
+                    return Double.POSITIVE_INFINITY;
+                } else if(pCurrentPos.getX() + pVelocity.getX() * toReturn > Math.max(vertex1.getX(), vertex2.getX())
+                        || pCurrentPos.getX() + pVelocity.getX() * toReturn < Math.min(vertex1.getX(), vertex2.getX())) {
+                    
+                    return toReturn;
+                }
             }
 
             return Double.POSITIVE_INFINITY;

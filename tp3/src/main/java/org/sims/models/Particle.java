@@ -125,7 +125,7 @@ public class Particle {
      * @return smallest collision time
      */
     public WallCollision collisionTime(final Wall wall) {
-        return new WallCollision(this, wall,wall.collidesWith(this));
+        return new WallCollision(this, wall, wall.collisionTime(this));
     }
 
     private static final double MAGIC_NUMBER = 0.09;
