@@ -2,6 +2,7 @@ package org.sims;
 
 import org.sims.Simulation.Step;
 import org.sims.models.Wall;
+import me.tongfei.progressbar.ProgressBar;
 
 import java.util.concurrent.Executors;
 
@@ -19,16 +20,19 @@ public class Main {
 
         Resources.preparePath("steps");
 
-        System.out.println("Starting simulation...");
-        final var sim = new Simulation(10_000, particles, walls);
+        final var sim = new Simulation(100_000, particles, walls);
         final var engine = sim.engine();
 
+        final var pb = new ProgressBar("Simulating", sim.steps());
         try (final var executor = Executors.newSingleThreadExecutor()) {
             executor.submit(new Animator(engine.initial()));
 
             for (final var step : engine) {
                 executor.submit(new Animator(step));
+                pb.step();
             }
+        } finally {
+            pb.close();
         }
     }
 
