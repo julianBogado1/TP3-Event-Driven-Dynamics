@@ -17,7 +17,7 @@ public record Wall(Wall.Orientation orientation, Vector a, Vector b) implements 
         }
 
         Orientation() {
-            this(v -> null, v -> null);
+            this(_ -> null, _ -> null);
         }
 
         /**
