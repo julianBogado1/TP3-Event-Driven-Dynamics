@@ -1,6 +1,8 @@
 package org.sims.models;
 
 public record Vector(double x, double y) {
+    public static final Vector ZERO = new Vector(0.0, 0.0);
+
     public static Vector createNormalized(Vector v) {
         final var norm = norm(v);
         return new Vector(v.x / norm, v.y / norm);
