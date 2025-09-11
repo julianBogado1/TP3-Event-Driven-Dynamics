@@ -38,7 +38,7 @@ public class Main {
             final var filename = "%d.txt".formatted(step.i());
             try (final var writer = Resources.writer("steps", filename)) {
                 for (final var p : step.particles()) {
-                    writer.write(p.toString() + "\n");
+                    writer.write("%s\n".formatted(p));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
