@@ -93,20 +93,25 @@ public class Main {
          * @return The next event to happen
          */
         private Event nextEvent(List<Particle> particles, List<Wall> walls){
-//            Event particleCollision = new ParticleCollision(null, null, Double.POSITIVE_INFINITY);
+            Event particleCollision = new ParticleCollision(null, null, Double.POSITIVE_INFINITY);
             Event wallCollision = new WallCollision(null, null, Double.POSITIVE_INFINITY);
             for(Particle p : particles){
-//                for(Particle other:particles){
-//                    Event temp = p.collisionTime(other);
-//                    if(temp.collisionTime< particleCollision.collisionTime){particleCollision = temp;}
-//                }
+                for(Particle other:particles){
+                    Event temp = p.collisionTime(other);
+                    if(temp.collisionTime< particleCollision.collisionTime){particleCollision = temp;}
+                }
                 for(Wall w : walls){
                     Event temp = p.collisionTime(w);
                     if(temp.collisionTime< wallCollision.collisionTime){wallCollision = temp;}
                 }
+                if( ((WallCollision) wallCollision).getWall() == null){
+//                    System.out.println("######todos los tiempos de colision infinitos");
+//                    System.out.println("Particle: "+p);
+                }
+
             }
-//            Event tc =  (particleCollision.collisionTime < wallCollision.collisionTime) ? particleCollision : wallCollision;
-            WallCollision tc = (WallCollision) wallCollision;
+            Event tc =  (particleCollision.collisionTime < wallCollision.collisionTime) ? particleCollision : wallCollision;
+//            WallCollision tc = (WallCollision) wallCollision;
 //            System.out.println("Collision time: "+tc.collisionTime);
 //            System.out.println("##Particle: "+tc.getParticle()+" Wall: "+tc.getWall());
             return tc;
