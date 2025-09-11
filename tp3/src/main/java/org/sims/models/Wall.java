@@ -89,7 +89,7 @@ public record Wall(Wall.Orientation orientation, Vector a, Vector b) implements 
 
         // Get the constant coordinate of the wall (x for vertical, y for horizontal)
         final var wall = orientation.constant(a);
-        // Get the variable coordinates of the wall (y for vertical, x for horizontal)
+        // Get the constant coordinates of the particle's position and velocity
         final var cvel = orientation.constant(p.getVelocity());
         final var cpos = orientation.constant(p.getPosition());
 
