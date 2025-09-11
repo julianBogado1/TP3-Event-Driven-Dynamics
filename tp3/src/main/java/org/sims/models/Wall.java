@@ -116,7 +116,7 @@ public record Wall(Wall.Orientation orientation, Vector a, Vector b) implements 
         final var future = Particle.move(p, time);
 
         // If the particle in the future is not between the wall's length
-        if (!between(orientation.variable(future), orientation.variable(a), orientation.variable(b))) {
+        if (!between(orientation.variable(future), p.getRadius(), orientation.variable(a), orientation.variable(b))) {
             return Double.POSITIVE_INFINITY;
         }
 
@@ -128,13 +128,14 @@ public record Wall(Wall.Orientation orientation, Vector a, Vector b) implements 
      * Checks if a value is between two other values, inclusive,
      * regardless of order
      *
-     * @param val value to check
-     * @param a   first bound
-     * @param b   second bound
+     * @param val   value to check
+     * @param range Small range of tolerance
+     * @param a     first bound
+     * @param b     second bound
      * @return true if val is between a and b
      */
-    private static final boolean between(double val, double a, double b) {
-        return Math.min(a, b) <= val && val <= Math.max(a, b);
+    private static final boolean between(double val, double range, double a, double b) {
+        return Math.min(a, b) - range <= val && val <= Math.max(a, b) + range;
     }
 
     @Override
