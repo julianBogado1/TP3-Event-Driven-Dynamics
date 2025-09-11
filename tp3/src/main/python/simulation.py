@@ -34,8 +34,9 @@ def main():
         ax.plot([wall.start.x, wall.end.x], [wall.start.y, wall.end.y], color="black") # pyright: ignore[reportUnknownMemberType]
 
     circles: list[Circle] = []
-    for _ in range(count):
-        c = Circle((0, 0), radius=0, color="blue")
+    for p in frames.next(0)[1]:
+        print(p)
+        c = Circle((p.position.x, p.position.y), radius=p.radius, color="blue")
         ax.add_patch(c)
         circles.append(c)
 
