@@ -52,20 +52,39 @@ public record Wall(Wall.Orientation orientation, Vector a, Vector b) implements 
      * @param L variable length of the right side
      * @return collision time
      */
-    public static List<Wall> generate(double L) {
+    public static List<Collideable> generate(double L) {
         final var lilCorner = (0.09 - L) / 2.0;
-        final var walls = new ArrayList<Wall>(8);
+        final var walls = new ArrayList<Collideable>(8);
 
         walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0, 0), new Vector(0.09, 0)));
+        addBumper(walls);
         walls.add(new Wall(Orientation.VERTICAL, new Vector(0.09, 0), new Vector(0.09, lilCorner)));
+        addBumper(walls);
         walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0.09, lilCorner), new Vector(0.18, lilCorner)));
+        addBumper(walls);
         walls.add(new Wall(Orientation.VERTICAL, new Vector(0.18, lilCorner), new Vector(0.18, lilCorner + L)));
+        addBumper(walls);
         walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0.18, lilCorner + L), new Vector(0.09, lilCorner + L)));
+        addBumper(walls);
         walls.add(new Wall(Orientation.VERTICAL, new Vector(0.09, lilCorner + L), new Vector(0.09, 0.09)));
+        addBumper(walls);
         walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0.09, 0.09), new Vector(0, 0.09)));
+        addBumper(walls);
         walls.add(new Wall(Orientation.VERTICAL, new Vector(0, 0.09), new Vector(0, 0)));
+        addBumper(walls);
 
         return walls;
+    }
+
+    /**
+     * NAAAAASTY
+     *
+     * Add a fake particle at the end of each wall to avoid floating point issues
+     */
+    private static void addBumper(List<Collideable> collideables) {
+        if (collideables.getLast() instanceof Wall w) {
+            collideables.add(new Particle(w.b, Vector.ZERO, 5e-5));
+        }
     }
 
     /**

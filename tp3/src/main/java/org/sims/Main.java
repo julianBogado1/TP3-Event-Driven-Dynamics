@@ -15,7 +15,9 @@ public class Main {
         try (final var writer = Resources.writer("setup.txt")) {
             writer.write("%d %.14f\n".formatted(particles.size(), 0.06));
             for (final var w : walls) {
-                writer.write("%s\n".formatted(w));
+                if (w instanceof Wall wall) {
+                    writer.write("%s\n".formatted(wall));
+                }
             }
         }
 
