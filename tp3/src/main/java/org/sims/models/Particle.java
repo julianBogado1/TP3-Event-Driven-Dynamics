@@ -112,7 +112,7 @@ public class Particle {
         
         final var vel_pos = rvel.dot(rpos);
 
-        if (vel_pos > 0) {
+        if (vel_pos >= 0) {
             return new ParticleCollision(this, p, Double.POSITIVE_INFINITY);
         }
 
