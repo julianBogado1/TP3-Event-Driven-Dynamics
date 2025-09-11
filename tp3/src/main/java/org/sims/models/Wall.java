@@ -88,6 +88,19 @@ public class Wall implements Collideable {
         return Double.POSITIVE_INFINITY;
     }
 
+    /**
+     * Checks if a value is between two other values, inclusive,
+     * regardless of order
+     *
+     * @param val value to check
+     * @param a   first bound
+     * @param b   second bound
+     * @return true if val is between a and b
+     */
+    private static final boolean between(double val, double a, double b) {
+        return Math.min(a, b) <= val && val <= Math.max(a, b);
+    }
+
     @Override
     public String toString() {
         return String.format("%s %s", vertex1, vertex2);
