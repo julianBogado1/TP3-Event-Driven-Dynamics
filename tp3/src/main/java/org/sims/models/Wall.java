@@ -112,7 +112,7 @@ public class Wall {
         }
 
         Orientation() {
-            this(_ -> null, _ -> null);
+            this(a -> null, a -> null);
         }
 
         /**
@@ -147,6 +147,10 @@ public class Wall {
      */
     private static final boolean between(double val, double a, double b) {
         return Math.min(a, b) <= val && val <= Math.max(a, b);
+    }
+
+    public Orientation getOrientation() {
+        return orientation;
     }
 
     @Override
