@@ -59,7 +59,18 @@ public class Particle implements Collideable {
      * @param dt time step
      */
     public void move(double dt) {
-        setPosition(this.position.add(this.velocity.mult(dt)));
+        setPosition(Particle.move(this, dt));
+    }
+
+    /**
+     * Returns the Vector position of the particle if moved a delta time
+     *
+     * @param p  particle to move
+     * @param dt time step
+     * @return new position of the particle
+     */
+    public static Vector move(Particle p, double dt) {
+        return p.getPosition().add(p.getVelocity().mult(dt));
     }
 
     /**
