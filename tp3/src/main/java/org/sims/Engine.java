@@ -2,7 +2,6 @@ package org.sims;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Queue;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.stream.Stream;
@@ -27,12 +26,22 @@ public record Engine(Simulation simulation) implements Iterable<Step> {
 
             @Override
             public boolean hasNext() {
-                return current < simulation.steps();
+                return !queue.isEmpty() && current < simulation.steps();
             }
 
             @Override
             public Step next() {
+                while (!queue.peek().valid(time)) {
+                    System.err.println("Invalid event found, skipping...");
+                    queue.poll();
+                }
+
                 final var event = queue.poll();
+                System.err.println(event);
+
+                if (event.time() == Double.POSITIVE_INFINITY) {
+                    System.err.println("Huh");
+                }
 
                 moveTo(event);
                 time = event.time();
@@ -58,7 +67,7 @@ public record Engine(Simulation simulation) implements Iterable<Step> {
      * @return List of tasks
      */
     private void calculateEvents(final Stream<Particle> stream, final double dt, final Queue<Event> queue) {
-        stream.map(p -> nextEvent(p, dt)).filter(Objects::nonNull).forEach(e -> queue.add(e));
+        stream.map(p -> nextEvent(p, dt)).forEach(e -> queue.addAll(e));
     }
 
     /**
@@ -71,10 +80,9 @@ public record Engine(Simulation simulation) implements Iterable<Step> {
         calculateEvents(simulation.particles().parallelStream(), 0.0, queue);
     }
 
-    private Event nextEvent(final Particle p, final double dt) {
+    private List<Event> nextEvent(final Particle p, final double dt) {
         return simulation.collideables().parallelStream()
                 .map(c -> new Event(p, c, c.collisionTime(p) + dt))
-                .min(Event::compareTo)
-                .orElse(null);
+                .toList();
     }
 }
