@@ -145,29 +145,30 @@ public class Particle implements Collideable {
 
     /**
      * Changes velocities of the particles received
-     * @param p first particle
+     * 
+     * @param p     first particle
      * @param other second particle
      */
     public static void collide(Particle p, Particle other) {
         Vector normalVersor = Vector.subtract(p.getPosition(), other.getPosition());
-        Vector xVersor = new Vector(1,0);
-        double alpha = Vector.angle(normalVersor, xVersor);    //angle between normal versor of collision and x axis
+        Vector xVersor = new Vector(1, 0);
+        double alpha = Vector.angle(normalVersor, xVersor); // angle between normal versor of collision and x axis
         double cosAlpha = Math.cos(alpha);
         double sinAlpha = Math.sin(alpha);
-        double m11 = (-cn * cosAlpha*cosAlpha) + (ct * sinAlpha*sinAlpha);
-        double m12 = -(cn+ct)*sinAlpha*cosAlpha;
+        double m11 = (-cn * cosAlpha * cosAlpha) + (ct * sinAlpha * sinAlpha);
+        double m12 = -(cn + ct) * sinAlpha * cosAlpha;
         double m21 = m12;
-        double m22 = (-cn * sinAlpha*sinAlpha) + (ct * cosAlpha*cosAlpha);
-        double[][] m = new double[][]{  {m11, m12},
-                                        {m21, m22} };
+        double m22 = (-cn * sinAlpha * sinAlpha) + (ct * cosAlpha * cosAlpha);
+        double[][] m = new double[][] { { m11, m12 },
+                { m21, m22 } };
         RealMatrix collisionOperator = MatrixUtils.createRealMatrix(m);
 
-        //=======First particle=======
+        // =======First particle=======
         RealMatrix v1 = MatrixUtils.createRealMatrix(p.getVelocity().toColumnMatrix());
         double[] v1Prime = collisionOperator.multiply(v1).getColumn(0);
         p.setVelocity(new Vector(v1Prime[0], v1Prime[1]));
 
-        //=======Second particle=====
+        // =======Second particle=====
         RealMatrix v2 = MatrixUtils.createRealMatrix(other.getVelocity().toColumnMatrix());
         double[] v2Prime = collisionOperator.multiply(v2).getColumn(0);
         other.setVelocity(new Vector(v2Prime[0], v2Prime[1]));
@@ -177,16 +178,14 @@ public class Particle implements Collideable {
     }
 
     public static void collide(Particle p, Wall w) {
-        if(w.getVertex1().x()-w.getVertex2().x()<=0){ //horizontal wall
+        if (w.getVertex1().x() - w.getVertex2().x() <= 0) { // horizontal wall
             p.setVelocity(new Vector(p.getVelocity().x(), -p.getVelocity().y()));
-        }
-        else if(w.getVertex1().y()-w.getVertex2().y()<=0){ //vertical wall
+        } else if (w.getVertex1().y() - w.getVertex2().y() <= 0) { // vertical wall
             p.setVelocity(new Vector(-p.getVelocity().x(), p.getVelocity().y()));
         }
 
         p.addEvent();
     }
-
 
     @Override
     public boolean equals(Object o) {
