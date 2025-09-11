@@ -32,12 +32,10 @@ public record Engine(Simulation simulation) implements Iterable<Step> {
             @Override
             public Step next() {
                 while (!queue.peek().valid(time)) {
-                    System.err.println("Invalid event found, skipping...");
                     queue.poll();
                 }
 
                 final var event = queue.poll();
-                System.err.println(event);
 
                 if (event.time() == Double.POSITIVE_INFINITY) {
                     System.err.println("Huh");
