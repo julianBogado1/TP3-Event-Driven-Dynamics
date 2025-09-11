@@ -202,10 +202,15 @@ public class Particle implements Collideable {
     }
 
     public static void collide(Particle p, Wall w) {
-        if (w.getVertex1().x() - w.getVertex2().x() <= 0) { // horizontal wall
-            p.setVelocity(new Vector(p.getVelocity().x(), -p.getVelocity().y()));
-        } else if (w.getVertex1().y() - w.getVertex2().y() <= 0) { // vertical wall
-            p.setVelocity(new Vector(-p.getVelocity().x(), p.getVelocity().y()));
+        switch (w.orientation()) {
+            case HORIZONTAL:
+                p.setVelocity(new Vector(p.getVelocity().x(), -p.getVelocity().y()));
+                break;
+            case VERTICAL:
+                p.setVelocity(new Vector(-p.getVelocity().x(), p.getVelocity().y()));
+                break;
+            default:
+                throw new IllegalArgumentException("Unsuported wall orientation");
         }
 
         p.addEvent();
