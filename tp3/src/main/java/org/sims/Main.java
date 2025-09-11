@@ -49,6 +49,4 @@ public class Main {
             }
         }
     }
-
-    // TODO wall generator that checks closed polygon
 }
