@@ -40,6 +40,10 @@ public class Vector {
         return new Vector(this.x * scalar, this.y * scalar);
     }
 
+    public Vector subtract(Vector v) {
+        return new Vector(this.x - v.x, this.y - v.y);
+    }
+
     public void addInPlace(Vector v) {
         this.x += v.x;
         this.y += v.y;
