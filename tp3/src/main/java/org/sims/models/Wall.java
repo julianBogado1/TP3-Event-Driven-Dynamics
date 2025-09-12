@@ -52,21 +52,23 @@ public record Wall(Wall.Orientation orientation, Vector a, Vector b, long id) im
      * @param L variable length of the right side
      * @return collision time
      */
-    public static List<Wall> generate(double L) {
+    public static List<Collideable> generate(double L) {
         final var lilCorner = (0.09 - L) / 2.0;
-        final var walls = new ArrayList<Wall>(8);
+        final var c = new ArrayList<Collideable>(10);
 
         // Assign meaningful IDs to walls for chamber identification
-        walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0, 0), new Vector(0.09, 0), 0));           // Bottom wall (left)
-        walls.add(new Wall(Orientation.VERTICAL, new Vector(0.09, 0), new Vector(0.09, lilCorner), 1));  // Right wall (left, bottom)
-        walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0.09, lilCorner), new Vector(0.18, lilCorner), 2)); // Bottom connector
-        walls.add(new Wall(Orientation.VERTICAL, new Vector(0.18, lilCorner), new Vector(0.18, lilCorner + L), 3)); // Right wall (right)
-        walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0.18, lilCorner + L), new Vector(0.09, lilCorner + L), 4)); // Top connector
-        walls.add(new Wall(Orientation.VERTICAL, new Vector(0.09, lilCorner + L), new Vector(0.09, 0.09), 5)); // Right wall (left, top)
-        walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0.09, 0.09), new Vector(0, 0.09), 6));      // Top wall (left)
-        walls.add(new Wall(Orientation.VERTICAL, new Vector(0, 0.09), new Vector(0, 0), 7));             // Left wall
+        c.add(new Wall(Orientation.HORIZONTAL, new Vector(0, 0), new Vector(0.09, 0), 0));           // Bottom wall (left)
+        c.add(new Wall(Orientation.VERTICAL, new Vector(0.09, 0), new Vector(0.09, lilCorner), 1));  // Right wall (left, bottom)
+        c.add(new Vertex(new Vector(0.09, lilCorner))); // Bottom-left corner
+        c.add(new Wall(Orientation.HORIZONTAL, new Vector(0.09, lilCorner), new Vector(0.18, lilCorner), 2)); // Bottom connector
+        c.add(new Wall(Orientation.VERTICAL, new Vector(0.18, lilCorner), new Vector(0.18, lilCorner + L), 3)); // Right wall (right)
+        c.add(new Wall(Orientation.HORIZONTAL, new Vector(0.18, lilCorner + L), new Vector(0.09, lilCorner + L), 4)); // Top connector
+        c.add(new Vertex(new Vector(0.09, lilCorner + L))); // Top-left corner
+        c.add(new Wall(Orientation.VERTICAL, new Vector(0.09, lilCorner + L), new Vector(0.09, 0.09), 5)); // Right wall (left, top)
+        c.add(new Wall(Orientation.HORIZONTAL, new Vector(0.09, 0.09), new Vector(0, 0.09), 6));      // Top wall (left)
+        c.add(new Wall(Orientation.VERTICAL, new Vector(0, 0.09), new Vector(0, 0), 7));             // Left wall
 
-        return walls;
+        return c;
     }
 
     /**

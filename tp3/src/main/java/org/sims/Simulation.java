@@ -25,8 +25,8 @@ import org.sims.models.Wall;
  * }
  * </pre>
  */
-public record Simulation(long steps, List<Particle> particles, List<Wall> walls, List<Collideable> collideables) {
-    public Simulation(long steps, List<Particle> particles, List<Wall> walls) {
+public record Simulation(long steps, List<Particle> particles, List<Collideable> walls, List<Collideable> collideables) {
+    public Simulation(long steps, List<Particle> particles, List<Collideable> walls) {
         this(steps, List.copyOf(particles), List.copyOf(walls), Stream.concat(particles.stream(), walls.stream()).toList());
     }
 
@@ -50,8 +50,9 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls,
      * @return true if valid position
      */
     public static List<Particle> generateInitialState(int numParticles, double startingVelocity, double radius) {
-        final List<Wall> walls = Wall.generate(0.05);
-        final List<Particle> particles = new ArrayList<>(numParticles);
+        final var collideables = Wall.generate(0.05);
+        final var walls = collideables.stream().filter(c -> c instanceof Wall).map(c -> (Wall) c).toList();
+        final var particles = new ArrayList<Particle>(numParticles);
 
         for (int i = 0; i < numParticles; i++) {
             final var theta = Math.random() * 2 * Math.PI;
