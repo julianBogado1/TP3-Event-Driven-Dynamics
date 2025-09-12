@@ -121,13 +121,13 @@ public class Particle implements Collideable {
         
         final var vel_pos = rvel.dot(rpos);
 
-        if (vel_pos >= 0) {
+        if (vel_pos >= -1e-14) {
             return Double.POSITIVE_INFINITY;
         }
 
         final var vel_vel = rvel.dot(rvel);
 
-        if (vel_vel == 0) {
+        if (-1e-14 < vel_vel && vel_vel < 1e-14) {
             return Double.POSITIVE_INFINITY;
         }
 
@@ -136,13 +136,13 @@ public class Particle implements Collideable {
 
         final var d = vel_pos * vel_pos - vel_vel * (pos_pos - sigma * sigma);
 
-        if (d < 0) {
+        if (d < 1e-14) {
             return Double.POSITIVE_INFINITY;
         }
 
         final var t = -(vel_pos + Math.sqrt(d)) / vel_vel;
 
-        if (t < 0) {
+        if (t < 1e-14) {
             return Double.POSITIVE_INFINITY;
         }
 
