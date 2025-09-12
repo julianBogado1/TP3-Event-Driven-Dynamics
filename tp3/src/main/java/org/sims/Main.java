@@ -61,43 +61,14 @@ public class Main {
 
         @Override
         public void run() {
-            try {
-                // Debug: Check what type we're actually getting
-                String actualType = event.c().getClass().getSimpleName();
-                
-                // Determine collision type and participants
-                String collisionType = event.c() instanceof Particle ? "PARTICLE" : "WALL";
-                long particleId = event.p().getID();
-                
-                // Debug output for first few events (using static counter)
-                if (event.time() < 0.001) {
-                    System.out.println("Early event: " + actualType + " -> " + collisionType + " at time " + event.time());
-                }
-                
-                if (event.c() instanceof Particle otherParticle) {
-                    // Particle-particle collision
-                    output.append("%.14f %s %d %d\n".formatted(
-                        event.time(), 
-                        collisionType, 
-                        particleId,
-                        otherParticle.getID()
-                    ));
-                } else if (event.c() instanceof Wall wall) {
-                    // Particle-wall collision
-                    output.append("%.14f %s %d %d\n".formatted(
-                        event.time(), 
-                        collisionType, 
-                        particleId,
-                        wall.id()
-                    ));
-                } else {
-                    // Fallback for unknown collision type
-                    output.append("%.14f %s %d -1\n".formatted(
-                        event.time(), 
-                        "UNKNOWN", 
-                        particleId
-                    ));
-                }
+            try {                
+                final var type = event.c() instanceof Particle ? "PARTICLE" : "WALL";
+                output.append("%.14f %s %d %d\n".formatted(
+                    event.time(), 
+                    type, 
+                    event.p().id(),
+                    event.c().id()
+                ));
             } catch (Exception e) {
                 e.printStackTrace();
             }
