@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public record Wall(Wall.Orientation orientation, Vector a, Vector b, int id) implements Collideable {
+public record Wall(Wall.Orientation orientation, Vector a, Vector b, long id) implements Collideable {
     public static enum Orientation {
         VERTICAL(Vector::x, Vector::y), HORIZONTAL(Vector::y, Vector::x), ANY;
 

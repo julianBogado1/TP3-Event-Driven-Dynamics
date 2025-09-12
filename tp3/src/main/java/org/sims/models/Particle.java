@@ -38,7 +38,7 @@ public class Particle implements Collideable {
      *
      * @return ID of the particle
      */
-    public long getID() {
+    public long id() {
         return ID;
     }
 
