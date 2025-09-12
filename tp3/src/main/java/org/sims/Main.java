@@ -26,9 +26,10 @@ public class Main {
 
         final var pb = new ProgressBar("Simulating", sim.steps());
 
-        try (final var animator = Executors.newFixedThreadPool(4);
-                final var timer = Executors.newSingleThreadExecutor();
-                final var timeout = Resources.writer("events.txt")) {
+        try (
+                final var timeout = Resources.writer("events.txt");
+                final var animator = Executors.newFixedThreadPool(4);
+                final var timer = Executors.newSingleThreadExecutor()) {
             Timer.setOutput(timeout);
             animator.submit(new Animator(engine.initial()));
 
