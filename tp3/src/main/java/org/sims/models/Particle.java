@@ -1,8 +1,5 @@
 package org.sims.models;
 
-import org.apache.commons.math3.linear.MatrixUtils;
-import org.apache.commons.math3.linear.RealMatrix;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -118,7 +115,7 @@ public class Particle implements Collideable {
 
         final var rvel = p.velocity.subtract(this.velocity);
         final var rpos = p.position.subtract(this.position);
-        
+
         final var vel_pos = rvel.dot(rpos);
 
         if (vel_pos >= -1e-14) {
@@ -155,8 +152,6 @@ public class Particle implements Collideable {
         return copy;
     }
 
-    private static double ct = 1, cn = 1;
-
     public static void collide(Particle p, Collideable c) {
         if (c instanceof Particle p2) {
             collide(p, p2);
@@ -170,35 +165,24 @@ public class Particle implements Collideable {
     /**
      * Changes velocities of the particles received
      * 
-     * @param p     first particle
-     * @param other second particle
+     * @param p1 first particle
+     * @param p2 second particle
      */
-    public static void collide(Particle p, Particle other) {
-        Vector normalVersor = Vector.subtract(p.getPosition(), other.getPosition());
-        Vector xVersor = new Vector(1, 0);
-        double alpha = Vector.angle(normalVersor, xVersor); // angle between normal versor of collision and x axis
-        double cosAlpha = Math.cos(alpha);
-        double sinAlpha = Math.sin(alpha);
-        double m11 = (-cn * cosAlpha * cosAlpha) + (ct * sinAlpha * sinAlpha);
-        double m12 = -(cn + ct) * sinAlpha * cosAlpha;
-        double m21 = m12;
-        double m22 = (-cn * sinAlpha * sinAlpha) + (ct * cosAlpha * cosAlpha);
-        double[][] m = new double[][] { { m11, m12 },
-                { m21, m22 } };
-        RealMatrix collisionOperator = MatrixUtils.createRealMatrix(m);
+    public static void collide(Particle p1, Particle p2) {
+        final var rvel = p2.getVelocity().subtract(p1.getVelocity());
+        final var rpos = p2.getPosition().subtract(p1.getPosition());
 
-        // =======First particle=======
-        RealMatrix v1 = MatrixUtils.createRealMatrix(p.getVelocity().toColumnMatrix());
-        double[] v1Prime = collisionOperator.multiply(v1).getColumn(0);
-        p.setVelocity(new Vector(v1Prime[0], v1Prime[1]));
+        final var vel_pos = rvel.dot(rpos);
+        final var dist = p1.getRadius() + p2.getRadius();
 
-        // =======Second particle=====
-        RealMatrix v2 = MatrixUtils.createRealMatrix(other.getVelocity().toColumnMatrix());
-        double[] v2Prime = collisionOperator.multiply(v2).getColumn(0);
-        other.setVelocity(new Vector(v2Prime[0], v2Prime[1]));
+        final var impulse = (2 * vel_pos) / (2 * dist);
+        final var j = rpos.mult(impulse).div(dist);
 
-        p.addEvent();
-        other.addEvent();
+        p1.setVelocity(p1.getVelocity().add(j));
+        p2.setVelocity(p2.getVelocity().subtract(j));
+
+        p1.addEvent();
+        p2.addEvent();
     }
 
     public static void collide(Particle p, Wall w) {
