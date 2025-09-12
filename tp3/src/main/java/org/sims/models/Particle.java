@@ -126,7 +126,7 @@ public class Particle implements Collideable {
         }
 
         final var vel_vel = rvel.dot(rvel);
-        
+
         if (vel_vel == 0) {
             return Double.POSITIVE_INFINITY;
         }
