@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from tqdm import tqdm
 import resources
 
+MAX_FILES = 2 ** 31 - 1; 
 
 @dataclass
 class CollisionEvent:
@@ -133,7 +134,7 @@ class SimplifiedPressureAnalyzer:
             print(f"Right chamber: {right_total} wall collisions")
             print(f"Left/Right ratio: {left_total/right_total:.3f}" if right_total > 0 else "Left/Right ratio: inf")
     
-    def calculate_pressure_evolution(self, max_events: int = 50000) -> PressureData:
+    def calculate_pressure_evolution(self, max_events: int = 2 ** 31 - 1) -> PressureData:
         """Calculate pressure evolution using direct collision event data"""
         
         # Load events
@@ -267,11 +268,11 @@ def main():
     print("=== Simplified Pressure Evolution Analysis ===")
     print("Using explicit collision event data from events.txt")
     
-    analyzer = SimplifiedPressureAnalyzer(events_per_bin=100)  # Adaptive binning
+    analyzer = SimplifiedPressureAnalyzer(events_per_bin=250)  # Adaptive binning
     
     try:
         # Calculate pressure evolution
-        pressure_data = analyzer.calculate_pressure_evolution(max_events=50000)
+        pressure_data = analyzer.calculate_pressure_evolution(max_events=MAX_FILES)
         
         if not pressure_data.time:
             print("No pressure data generated. Check simulation output files.")

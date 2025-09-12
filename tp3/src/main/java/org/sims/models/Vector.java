@@ -20,6 +20,10 @@ public record Vector(double x, double y) {
         return Vector.mult(this, scalar);
     }
 
+    public Vector div(double scalar) {
+        return Vector.div(this, scalar);
+    }
+
     public double dot(Vector v) {
         return Vector.dot(this, v);
     }
@@ -42,6 +46,10 @@ public record Vector(double x, double y) {
 
     public static Vector mult(Vector v, double scalar) {
         return new Vector(v.x * scalar, v.y * scalar);
+    }
+
+    public static Vector div(Vector v, double scalar) {
+        return new Vector(v.x / scalar, v.y / scalar);
     }
 
     public static double dot(Vector v1, Vector v2) {

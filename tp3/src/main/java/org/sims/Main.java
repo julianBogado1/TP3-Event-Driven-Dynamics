@@ -25,20 +25,20 @@ public class Main {
         final var sim = new Simulation(100_000, particles, walls);
         final var engine = sim.engine();
 
-        final var pb = new ProgressBar("Simulating", sim.steps());
-        final var timer = Resources.writer("events.txt");
+        try (
+                final var pb = new ProgressBar("Simulating", sim.steps());
+                final var timeout = Resources.writer("events.txt");
+                final var animator = Executors.newFixedThreadPool(4);
+                final var timer = Executors.newSingleThreadExecutor()) {
 
-        try (final var executor = Executors.newSingleThreadExecutor()) {
-            executor.submit(new Animator(engine.initial()));
+            Timer.setOutput(timeout);
+            animator.submit(new Animator(engine.initial()));
 
             for (final var step : engine) {
-                executor.submit(new Animator(step));
-                executor.submit(new Timer(step.event(), timer));
+                animator.submit(new Animator(step));
+                timer.submit(new Timer(step.event()));
                 pb.step();
             }
-        } finally {
-            pb.close();
-            timer.close();
         }
     }
 
@@ -56,7 +56,9 @@ public class Main {
         }
     }
 
-    private static record Timer(Event event, Appendable writer) implements Runnable {
+    private static record Timer(Event event) implements Runnable {
+        private static Appendable output;
+
         @Override
         public void run() {
             try {
@@ -74,7 +76,7 @@ public class Main {
                 
                 if (event.c() instanceof Particle otherParticle) {
                     // Particle-particle collision
-                    writer.append("%.14f %s %d %d\n".formatted(
+                    output.append("%.14f %s %d %d\n".formatted(
                         event.time(), 
                         collisionType, 
                         particleId,
@@ -82,7 +84,7 @@ public class Main {
                     ));
                 } else if (event.c() instanceof Wall wall) {
                     // Particle-wall collision
-                    writer.append("%.14f %s %d %d\n".formatted(
+                    output.append("%.14f %s %d %d\n".formatted(
                         event.time(), 
                         collisionType, 
                         particleId,
@@ -90,7 +92,7 @@ public class Main {
                     ));
                 } else {
                     // Fallback for unknown collision type
-                    writer.append("%.14f %s %d -1\n".formatted(
+                    output.append("%.14f %s %d -1\n".formatted(
                         event.time(), 
                         "UNKNOWN", 
                         particleId
@@ -99,6 +101,10 @@ public class Main {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        public static void setOutput(final Appendable output) {
+            Timer.output = output;
         }
     }
 }
