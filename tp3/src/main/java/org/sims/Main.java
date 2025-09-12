@@ -24,12 +24,12 @@ public class Main {
         final var sim = new Simulation(100_000, particles, walls);
         final var engine = sim.engine();
 
-        final var pb = new ProgressBar("Simulating", sim.steps());
-
         try (
+                final var pb = new ProgressBar("Simulating", sim.steps());
                 final var timeout = Resources.writer("events.txt");
                 final var animator = Executors.newFixedThreadPool(4);
                 final var timer = Executors.newSingleThreadExecutor()) {
+
             Timer.setOutput(timeout);
             animator.submit(new Animator(engine.initial()));
 
@@ -38,8 +38,6 @@ public class Main {
                 timer.submit(new Timer(step.event()));
                 pb.step();
             }
-        } finally {
-            pb.close();
         }
     }
 
