@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-public record Wall(Wall.Orientation orientation, Vector a, Vector b) implements Collideable {
+public record Wall(Wall.Orientation orientation, Vector a, Vector b, int id) implements Collideable {
     public static enum Orientation {
         VERTICAL(Vector::x, Vector::y), HORIZONTAL(Vector::y, Vector::x), ANY;
 
@@ -43,7 +43,7 @@ public record Wall(Wall.Orientation orientation, Vector a, Vector b) implements 
 
     @Override
     public Wall clone() {
-        return new Wall(orientation, a, b);
+        return new Wall(orientation, a, b, id);
     }
 
     /**
@@ -56,14 +56,15 @@ public record Wall(Wall.Orientation orientation, Vector a, Vector b) implements 
         final var lilCorner = (0.09 - L) / 2.0;
         final var walls = new ArrayList<Wall>(8);
 
-        walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0, 0), new Vector(0.09, 0)));
-        walls.add(new Wall(Orientation.VERTICAL, new Vector(0.09, 0), new Vector(0.09, lilCorner)));
-        walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0.09, lilCorner), new Vector(0.18, lilCorner)));
-        walls.add(new Wall(Orientation.VERTICAL, new Vector(0.18, lilCorner), new Vector(0.18, lilCorner + L)));
-        walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0.18, lilCorner + L), new Vector(0.09, lilCorner + L)));
-        walls.add(new Wall(Orientation.VERTICAL, new Vector(0.09, lilCorner + L), new Vector(0.09, 0.09)));
-        walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0.09, 0.09), new Vector(0, 0.09)));
-        walls.add(new Wall(Orientation.VERTICAL, new Vector(0, 0.09), new Vector(0, 0)));
+        // Assign meaningful IDs to walls for chamber identification
+        walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0, 0), new Vector(0.09, 0), 0));           // Bottom wall (left)
+        walls.add(new Wall(Orientation.VERTICAL, new Vector(0.09, 0), new Vector(0.09, lilCorner), 1));  // Right wall (left, bottom)
+        walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0.09, lilCorner), new Vector(0.18, lilCorner), 2)); // Bottom connector
+        walls.add(new Wall(Orientation.VERTICAL, new Vector(0.18, lilCorner), new Vector(0.18, lilCorner + L), 3)); // Right wall (right)
+        walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0.18, lilCorner + L), new Vector(0.09, lilCorner + L), 4)); // Top connector
+        walls.add(new Wall(Orientation.VERTICAL, new Vector(0.09, lilCorner + L), new Vector(0.09, 0.09), 5)); // Right wall (left, top)
+        walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0.09, 0.09), new Vector(0, 0.09), 6));      // Top wall (left)
+        walls.add(new Wall(Orientation.VERTICAL, new Vector(0, 0.09), new Vector(0, 0), 7));             // Left wall
 
         return walls;
     }

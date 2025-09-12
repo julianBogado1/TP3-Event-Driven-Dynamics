@@ -1,6 +1,7 @@
 package org.sims;
 
 import org.sims.Simulation.Step;
+import org.sims.models.Particle;
 import org.sims.models.Wall;
 import me.tongfei.progressbar.ProgressBar;
 
@@ -59,7 +60,42 @@ public class Main {
         @Override
         public void run() {
             try {
-                writer.append("%.14f\n".formatted(event.time()));
+                // Debug: Check what type we're actually getting
+                String actualType = event.c().getClass().getSimpleName();
+                
+                // Determine collision type and participants
+                String collisionType = event.c() instanceof Particle ? "PARTICLE" : "WALL";
+                long particleId = event.p().getID();
+                
+                // Debug output for first few events (using static counter)
+                if (event.time() < 0.001) {
+                    System.out.println("Early event: " + actualType + " -> " + collisionType + " at time " + event.time());
+                }
+                
+                if (event.c() instanceof Particle otherParticle) {
+                    // Particle-particle collision
+                    writer.append("%.14f %s %d %d\n".formatted(
+                        event.time(), 
+                        collisionType, 
+                        particleId,
+                        otherParticle.getID()
+                    ));
+                } else if (event.c() instanceof Wall wall) {
+                    // Particle-wall collision
+                    writer.append("%.14f %s %d %d\n".formatted(
+                        event.time(), 
+                        collisionType, 
+                        particleId,
+                        wall.id()
+                    ));
+                } else {
+                    // Fallback for unknown collision type
+                    writer.append("%.14f %s %d -1\n".formatted(
+                        event.time(), 
+                        "UNKNOWN", 
+                        particleId
+                    ));
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
