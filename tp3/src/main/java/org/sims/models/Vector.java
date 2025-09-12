@@ -44,6 +44,10 @@ public class Vector {
         return new Vector(this.x - v.x, this.y - v.y);
     }
 
+    public Vector div(double scalar) {
+        return new Vector(this.x / scalar, this.y / scalar);
+    }
+
     public void addInPlace(Vector v) {
         this.x += v.x;
         this.y += v.y;
