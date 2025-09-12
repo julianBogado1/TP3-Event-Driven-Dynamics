@@ -54,22 +54,15 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls,
         final List<Particle> particles = new ArrayList<>(numParticles);
 
         for (int i = 0; i < numParticles; i++) {
-            boolean generated = false;
-            double x, y;
-            while (!generated) {
-                x = Math.random() * MAGIC_NUMBER;
-                y = Math.random() * MAGIC_NUMBER;
+            final var theta = Math.random() * 2 * Math.PI;
+            final var velocity = new Vector(startingVelocity * Math.cos(theta), startingVelocity * Math.sin(theta));
 
-                final var theta = Math.random() * 2 * Math.PI;
-                final var xVel = startingVelocity * Math.cos(theta);
-                final var yVel = startingVelocity * Math.sin(theta);
+            final var p = new Particle(null, velocity, radius);
+            do {
+                p.setPosition(new Vector(Math.random() * MAGIC_NUMBER, Math.random() * MAGIC_NUMBER));
+            } while (checkValidPosition(p, walls) && checkNonOverlap(p, particles));
 
-                final var p = new Particle(new Vector(x, y), new Vector(xVel, yVel), radius);
-                if (checkValidPosition(p, walls) && checkNonOverlap(p, particles)) {
-                    generated = true;
-                    particles.add(p); // Add the particle to the list
-                }
-            }
+            particles.add(p);
         }
 
         if (particles.size() < numParticles) {
