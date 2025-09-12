@@ -61,7 +61,7 @@ public class Main {
 
         @Override
         public void run() {
-            try {                
+            try {
                 final var type = event.c() instanceof Particle ? "PARTICLE" : "WALL";
                 output.append("%.14f %s %d %d\n".formatted(
                     event.time(), 
