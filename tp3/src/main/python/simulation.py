@@ -1,3 +1,7 @@
+from typing import Callable
+
+import time
+
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 from matplotlib.animation import FuncAnimation
@@ -30,8 +34,8 @@ def main():
         ax.plot([wall.start.x, wall.end.x], [wall.start.y, wall.end.y], color="black") # pyright: ignore[reportUnknownMemberType]
 
     circles: list[Circle] = []
-    for _ in range(count):
-        c = Circle((0, 0), radius=0, color="blue")
+    for p in frames.next(0)[1]:
+        c = Circle((p.position.x, p.position.y), radius=p.radius, color="blue")
         ax.add_patch(c)
         circles.append(c)
 
@@ -65,7 +69,15 @@ def main():
         plt.show() # pyright: ignore[reportUnknownMemberType]
         abar.close()
 
-    plt.show() # pyright: ignore[reportUnknownMemberType]
+    if True:
+        print("Saving animation...")
+
+        filename = resources.path(f"{int(time.time())}.mp4")
+        with tqdm(total=frames.count()) as sbar:
+            callback: Callable[[int, int], bool | None] = lambda _i, _n: sbar.update()
+            ani.save(filename, writer='ffmpeg', fps=60, dpi=300, progress_callback=callback)
+
+        print(f"Animation saved at {filename}")
 
 if __name__ == "__main__":
     main()
