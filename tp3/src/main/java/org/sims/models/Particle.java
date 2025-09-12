@@ -138,11 +138,8 @@ public class Particle implements Collideable {
         }
 
         final var t = -(vel_pos + Math.sqrt(d)) / vel_vel;
-        
-        // Add minimum time threshold to avoid floating-point precision issues
-        final var MIN_COLLISION_TIME = 1e-12;
-        
-        if (t < MIN_COLLISION_TIME) {
+
+        if (t < 1e-14) {
             return Double.POSITIVE_INFINITY;
         }
 
