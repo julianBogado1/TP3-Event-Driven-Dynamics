@@ -141,7 +141,7 @@ public class Particle implements Collideable {
         }
 
         final var t = -(vel_pos + Math.sqrt(d)) / vel_vel;
-        
+
         if (t < 0) {
             return Double.POSITIVE_INFINITY;
         }
