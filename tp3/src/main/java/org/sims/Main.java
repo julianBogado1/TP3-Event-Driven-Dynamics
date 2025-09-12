@@ -88,7 +88,7 @@ public class Main {
                     }
                 }
                 System.out.println("Executed event");
-                System.out.println("Collisioned particle: "+particles);
+                System.out.println("Collisioned particle: "+particles.stream().map(Particle::getID).toList());
 
             }
 
@@ -109,13 +109,13 @@ public class Main {
             for(Particle p : particles){
                 for(Particle other:particles){
                     Event temp = p.collisionTime(other);
-//                    if(temp.collisionTime< particleCollision.collisionTime){particleCollision = temp;}
+                    if(1e-12 < temp.collisionTime && !Double.isInfinite(temp.collisionTime))
                     queue.add(temp);
                 }
                 for(Wall w : walls){
                     Event temp = p.collisionTime(w);
-//                    if(temp.collisionTime< wallCollision.collisionTime){wallCollision = temp;}
-                    queue.add(temp);
+                    if(1e-12 < temp.collisionTime && !Double.isInfinite(temp.collisionTime))
+                        queue.add(temp);
                 }
                 if( ((WallCollision) wallCollision).getWall() == null){
 //                    System.out.println("######todos los tiempos de colision infinitos");
