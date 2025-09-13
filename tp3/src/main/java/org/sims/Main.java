@@ -26,23 +26,25 @@ public class Main {
         final var engine = sim.engine();
 
         try (
-                final var pb = new ProgressBar("Simulating", sim.steps());
+                final var pba = new ProgressBar("Saving State", sim.steps() + 1);
+                final var pbt = new ProgressBar("Saving Event", sim.steps());
                 final var timeout = Resources.writer("events.txt");
                 final var animator = Executors.newFixedThreadPool(4);
-                final var timer = Executors.newSingleThreadExecutor()) {
+                final var timer = Executors.newSingleThreadExecutor();
+                final var pb = new ProgressBar("Simulating", sim.steps())) {
 
             Timer.setOutput(timeout);
-            animator.submit(new Animator(engine.initial()));
+            animator.submit(new Animator(engine.initial(), pba));
 
             for (final var step : engine) {
-                animator.submit(new Animator(step));
-                timer.submit(new Timer(step.event()));
+                animator.submit(new Animator(step, pba));
+                timer.submit(new Timer(step.event(), pbt));
                 pb.step();
             }
         }
     }
 
-    private static record Animator(Step step) implements Runnable {
+    private static record Animator(Step step, ProgressBar pb) implements Runnable {
         @Override
         public void run() {
             final var filename = "%d.txt".formatted(step.i());
@@ -50,13 +52,14 @@ public class Main {
                 for (final var p : step.particles()) {
                     writer.write("%s\n".formatted(p));
                 }
+                pb.step();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private static record Timer(Event event) implements Runnable {
+    private static record Timer(Event event, ProgressBar pb) implements Runnable {
         private static Appendable output;
 
         @Override
@@ -69,6 +72,7 @@ public class Main {
                     event.p().id(),
                     event.c().id()
                 ));
+                pb.step();
             } catch (Exception e) {
                 e.printStackTrace();
             }
