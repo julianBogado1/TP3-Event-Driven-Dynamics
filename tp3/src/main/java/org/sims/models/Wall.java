@@ -6,18 +6,22 @@ import java.util.function.Function;
 
 public record Wall(Wall.Orientation orientation, Vector a, Vector b, long id) implements Collideable {
     public static enum Orientation {
-        VERTICAL(Vector::x, Vector::y), HORIZONTAL(Vector::y, Vector::x), ANY;
+        VERTICAL(Vector::x, Vector::y, Vector.NONE_ONE::hadamard),
+        HORIZONTAL(Vector::y, Vector::x, Vector.ONE_NONE::hadamard),
+        ANY;
 
         private final Function<Vector, Double> constant;
         private final Function<Vector, Double> variable;
+        private final Function<Vector, Vector> collide;
 
-        Orientation(final Function<Vector, Double> constant, final Function<Vector, Double> variable) {
+        Orientation(final Function<Vector, Double> constant, final Function<Vector, Double> variable, Function<Vector, Vector> collide) {
             this.constant = constant;
             this.variable = variable;
+            this.collide = collide;
         }
 
         Orientation() {
-            this(_ -> null, _ -> null);
+            this(_ -> null, _ -> null, _ -> null);
         }
 
         /**
@@ -39,19 +43,20 @@ public record Wall(Wall.Orientation orientation, Vector a, Vector b, long id) im
         public double variable(Vector v) {
             return variable.apply(v);
         }
+
+        /**
+         * Collide a velocity vector according to the wall orientation
+         *
+         * @param v vector to collide
+         * @return collided vector
+         */
+        public Vector collide(Vector v) {
+            return collide.apply(v);
+        }
     }
 
     public void collide(Particle p) {
-        switch (orientation) {
-            case HORIZONTAL:
-                p.setVelocity(new Vector(p.getVelocity().x(), -p.getVelocity().y()));
-                break;
-            case VERTICAL:
-                p.setVelocity(new Vector(-p.getVelocity().x(), p.getVelocity().y()));
-                break;
-            default:
-                throw new IllegalArgumentException("Unsuported wall orientation");
-        }
+        p.setVelocity(orientation.collide(p.getVelocity()));
     }
 
     @Override
