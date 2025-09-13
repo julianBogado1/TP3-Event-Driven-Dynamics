@@ -8,6 +8,10 @@ public record Vector(double x, double y) {
         return new Vector(v.x / norm, v.y / norm);
     }
 
+    public Vector neg() {
+        return Vector.neg(this);
+    }
+
     public Vector add(Vector v) {
         return Vector.add(this, v);
     }
@@ -34,6 +38,10 @@ public record Vector(double x, double y) {
 
     public double angle(Vector v) {
         return Vector.angle(this, v);
+    }
+
+    public static Vector neg(Vector v) {
+        return new Vector(-v.x, -v.y);
     }
 
     public static Vector add(Vector v1, Vector v2) {
