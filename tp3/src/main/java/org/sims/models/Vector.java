@@ -1,7 +1,19 @@
 package org.sims.models;
 
 public record Vector(double x, double y) {
-    public static final Vector ZERO = new Vector(0.0, 0.0);
+    public static final Vector NONE_NONE = new Vector(-1.0, -1.0);
+    public static final Vector NONE_ZERO = new Vector(-1.0, 0.0);
+    public static final Vector NONE_ONE = new Vector(-1.0, 1.0);
+
+    public static final Vector ZERO_NONE = new Vector(0.0, -1.0);
+    public static final Vector ZERO_ZERO = new Vector(0.0, 0.0);
+    public static final Vector ZERO_ONE = new Vector(0.0, 1.0);
+
+    public static final Vector ONE_NONE = new Vector(1.0, -1.0);
+    public static final Vector ONE_ZERO = new Vector(1.0, 0.0);
+    public static final Vector ONE_ONE = new Vector(1.0, 1.0);
+
+    public static final Vector ZERO = ZERO_ZERO;
 
     public static Vector createNormalized(Vector v) {
         final var norm = norm(v);
