@@ -15,7 +15,6 @@ Example:
 
 import numpy as np
 import matplotlib.pyplot as plt
-from typing import List, Dict
 from dataclasses import dataclass
 from tqdm import tqdm
 import resources
@@ -32,9 +31,9 @@ class CollisionEvent:
 
 @dataclass 
 class PressureData:
-    time: List[float]
-    left_pressure: List[float]
-    right_pressure: List[float]
+    time: list[float]
+    left_pressure: list[float]
+    right_pressure: list[float]
 
 
 class SimplifiedPressureAnalyzer:
@@ -66,12 +65,12 @@ class SimplifiedPressureAnalyzer:
         """Parse float with comma as decimal separator"""
         return float(value_str.replace(',', '.'))
     
-    def load_collision_events(self, max_events: int = None) -> List[CollisionEvent]:
+    def load_collision_events(self, max_events: int | None = None) -> list[CollisionEvent]:
         """Load collision events from events.txt"""
         
         print("Loading collision events...")
-        events = []
-        
+        events: list[CollisionEvent] = []
+
         with open(resources.path("events.txt")) as f:
             for line_num, line in enumerate(f, 1):
                 parts = line.strip().split()
@@ -99,7 +98,7 @@ class SimplifiedPressureAnalyzer:
         print(f"Loaded {len(events)} collision events")
         return events
     
-    def analyze_collision_distribution(self, events: List[CollisionEvent]):
+    def analyze_collision_distribution(self, events: list[CollisionEvent]):
         """Analyze the distribution of collision types and wall hits"""
         
         wall_events = [e for e in events if e.collision_type == "WALL"]
@@ -111,7 +110,7 @@ class SimplifiedPressureAnalyzer:
         
         # Analyze wall collision distribution
         if wall_events:
-            wall_counts = {}
+            wall_counts: dict[int, int] = {}
             for event in wall_events:
                 wall_id = event.target_id
                 wall_counts[wall_id] = wall_counts.get(wall_id, 0) + 1
@@ -223,15 +222,15 @@ class SimplifiedPressureAnalyzer:
         return PressureData(time_centers, left_pressure, right_pressure)
 
 
-def plot_pressure_evolution(pressure_data: PressureData, save_path: str = None):
+def plot_pressure_evolution(pressure_data: PressureData, save_path: str | None = None):
     """Create pressure evolution plots"""
     
     if not pressure_data.time:
         print("No data to plot!")
         return
-    
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(12, 10))
-    
+
+    _fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(12, 10)) # pyright: ignore[reportUnknownMemberType]
+
     # Individual chamber pressures
     ax1.plot(pressure_data.time, pressure_data.left_pressure, 'b-', label='Left Chamber', alpha=0.7)
     ax1.set_ylabel('Pressure (collisions/s/m)')
@@ -257,10 +256,10 @@ def plot_pressure_evolution(pressure_data: PressureData, save_path: str = None):
     plt.tight_layout()
     
     if save_path:
-        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        plt.savefig(save_path, dpi=300, bbox_inches='tight') # pyright: ignore[reportUnknownMemberType]
         print(f"Plot saved to {save_path}")
-    
-    plt.show()
+
+    plt.show() # pyright: ignore[reportUnknownMemberType]
 
 
 def main():
