@@ -26,9 +26,9 @@ public class Main {
 
         try (
                 final var pba = new ProgressBar("Saving State", sim.steps() + 1);
+                final var animator = Executors.newFixedThreadPool(4);
                 final var pbt = new ProgressBar("Saving Event", sim.steps());
                 final var timeout = Resources.writer("events.txt");
-                final var animator = Executors.newFixedThreadPool(4);
                 final var timer = Executors.newSingleThreadExecutor();
                 final var pb = new ProgressBar("Simulating", sim.steps())) {
 
