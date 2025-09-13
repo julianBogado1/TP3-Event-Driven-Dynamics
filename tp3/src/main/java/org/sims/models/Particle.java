@@ -197,6 +197,6 @@ public class Particle implements Collideable {
 
     @Override
     public String toString() {
-        return String.format("%s %s %.14f", position, velocity, radius);
+        return "%s %s %.14f".formatted(position, velocity, radius);
     }
 }

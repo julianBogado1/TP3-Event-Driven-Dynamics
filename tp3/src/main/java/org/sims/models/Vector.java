@@ -111,6 +111,6 @@ public record Vector(double x, double y) {
 
     @Override
     public String toString() {
-        return String.format("%.14f %.14f", x, y);
+        return "%.14f %.14f".formatted(x, y);
     }
 }
