@@ -40,6 +40,10 @@ public record Vector(double x, double y) {
         return Vector.angle(this, v);
     }
 
+    public Vector hadamard(Vector v) {
+        return Vector.hadamard(this, v);
+    }
+
     public static Vector neg(Vector v) {
         return new Vector(-v.x, -v.y);
     }
@@ -78,6 +82,10 @@ public record Vector(double x, double y) {
         double norm1 = norm(v1);
         double norm2 = norm(v2);
         return Math.acos(v1.dot(v2)/ (norm1*norm2));
+    }
+
+    public static Vector hadamard(Vector v1, Vector v2) {
+        return new Vector(v1.x * v2.x, v1.y * v2.y);
     }
 
     /**
