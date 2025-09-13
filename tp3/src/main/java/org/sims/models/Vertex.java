@@ -8,12 +8,12 @@ public record Vertex(Vector position, Particle ghost, long id) implements Collid
     }
 
     @Override
-    public double collisionTime(Particle p) {
+    public double collisionTime(final Particle p) {
         return ghost.collisionTime(p);
     }
 
     @Override
-    public void collide(Particle p) {
+    public void collide(final Particle p) {
         p.setVelocity(p.getVelocity().neg());
     }
 

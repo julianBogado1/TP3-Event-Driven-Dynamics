@@ -158,7 +158,7 @@ public class Particle implements Collideable {
      *
      * @param p second particle
      */
-    public void collide(Particle p) {
+    public void collide(final Particle p) {
         final var rvel = p.velocity.subtract(this.velocity);
         final var rpos = p.position.subtract(this.position);
 

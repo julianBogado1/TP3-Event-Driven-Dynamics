@@ -55,7 +55,7 @@ public record Wall(Wall.Orientation orientation, Vector a, Vector b, long id) im
         }
     }
 
-    public void collide(Particle p) {
+    public void collide(final Particle p) {
         p.setVelocity(orientation.collide(p.getVelocity()));
     }
 
