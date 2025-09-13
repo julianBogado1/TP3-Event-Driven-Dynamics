@@ -25,7 +25,7 @@ def main():
 
         walls = [Wall(*map(float, line.strip().split())) for line in f]
 
-    executor = Executor(frames.next, frames.count())
+    executor = Executor(frames.next, range(frames.count()))
 
     fig, ax = plt.subplots() # pyright: ignore[reportUnknownMemberType]
     ax.set_aspect('equal', adjustable="box")

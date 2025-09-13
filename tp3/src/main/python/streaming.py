@@ -1,13 +1,13 @@
-from typing import Callable
+from typing import Callable, Iterable
 
 import multiprocessing as mp
 
-class SequentialStreamingExecutor[T]:
+class SequentialStreamingExecutor[I, O]:
     """
     Executor that streams results sequentially from a task.
     """
 
-    def __init__(self, task: Callable[[int], tuple[int, T]], count: int):
+    def __init__(self, task: Callable[[I], tuple[I, O]], inputs: Iterable[I]):
         """
         Initializes the executor with a task to execute.
 
@@ -20,25 +20,26 @@ class SequentialStreamingExecutor[T]:
         self.shared_dict = self.manager.dict()
         self.condition = self.manager.Condition()
         self.pool = mp.Pool(processes=12)
-        self.count = count
+        self.inputs = inputs
+        self.count = 0
 
-        def done(result: tuple[int, T]):
-            task_id, output = result
-            # print(f"Item {task_id} done")
+        def done(result: tuple[I, O]):
+            input, output = result
             try:
                 with self.condition:
-                    self.shared_dict[task_id] = output
+                    self.shared_dict[input] = output
                     self.condition.notify_all()
             except EOFError:
                 # Closed semaphore
                 pass
 
-        for task_id in range(self.count):
+        for i in inputs:
+            self.count += 1
             self.pool.apply_async(
                 task,
-                args=(task_id,),
+                args=(i,),
                 callback=done,
-                error_callback=lambda e: print(f"Error in task {task_id}: {e}")
+                error_callback=lambda e: print(f"Error in task {i}: {e}")
             )
         self.pool.close()
 
@@ -48,15 +49,11 @@ class SequentialStreamingExecutor[T]:
 
         :return: A generator yielding lists of particles.
         """
-        next_id = 0
-        while next_id < self.count:
+        for input in self.inputs:
             try:
                 with self.condition:
-                    # print(f"Waiting for item {next_id}")
-                    self.condition.wait_for(lambda: next_id in self.shared_dict)
-                    result = self.shared_dict.pop(next_id)
-                    # print(f"Item {next_id} consumed")
-                    next_id += 1
+                    self.condition.wait_for(lambda: input in self.shared_dict)
+                    result = self.shared_dict.pop(input)
                     yield result
             except FileNotFoundError:
                 # If the pool is closed, we stop yielding results
@@ -65,4 +62,3 @@ class SequentialStreamingExecutor[T]:
     def close(self):
         self.pool.terminate()
         self.manager.shutdown()
-        # print("StreamingExecutor closed.")
