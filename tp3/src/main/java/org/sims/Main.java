@@ -13,7 +13,7 @@ public class Main {
         final var particles = Simulation.generateInitialState(200, 0.01, 0.0015);
 
         try (final var writer = Resources.writer("setup.txt")) {
-            writer.write("%d %.14f\n".formatted(particles.size(), 0.06));
+            writer.write("%d %.14f\n".formatted(particles.size(), 0.07));
             for (final var w : walls) {
                 writer.write("%s\n".formatted(w));
             }
