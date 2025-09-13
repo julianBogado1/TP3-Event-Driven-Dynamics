@@ -7,27 +7,21 @@ import java.util.stream.Stream;
 import org.sims.models.Collideable;
 import org.sims.models.Particle;
 import org.sims.models.Vector;
+import org.sims.models.Vertex;
 import org.sims.models.Wall;
+import org.sims.models.Wall.Orientation;
 
 /**
  * A simulation of particles in a bounded 2D space with walls.
  *
  * Defines the initial state of the simulation, and provides an engine to run
  * the simulation.
- *
- * <pre>
- * {@code
- * final var sim = new Simulation(1000, Simulation.generateInitialState(100, 0.01, 0.002), Wall.generate(0.05));
- * try (final var engine = sim.engine()) {
- *     for (final var step : engine) {
- *         // Process each step of the simulation
- *     }
- * }
- * </pre>
  */
-public record Simulation(long steps, List<Particle> particles, List<Collideable> walls, List<Collideable> collideables) {
-    public Simulation(long steps, List<Particle> particles, List<Collideable> walls) {
-        this(steps, List.copyOf(particles), List.copyOf(walls), Stream.concat(particles.stream(), walls.stream()).toList());
+public record Simulation(long steps, double L, List<Particle> particles, List<Collideable> box,
+        List<Collideable> collideables) {
+    public Simulation(long steps, double L, List<Particle> particles, List<Collideable> box) {
+        this(steps, L, List.copyOf(particles), List.copyOf(box),
+                Stream.concat(particles.stream(), box.stream()).toList());
     }
 
     /**
@@ -39,24 +33,29 @@ public record Simulation(long steps, List<Particle> particles, List<Collideable>
         return new Engine(this);
     }
 
+    /**
+     * Size of the left box, where the particles start
+     */
     private static final double MAGIC_NUMBER = 0.09;
 
     /**
-     * Generates initial list of particles with random positions and radii
+     * Build a simulation with particles of random positions and radii
      *
-     * @param numParticles     number of particles to generate
-     * @param startingVelocity initial velocity of particles -> now used as x,y
-     *                         components
-     * @return true if valid position
+     * @param steps number of steps to simulate
+     * @param L     variable length of the right side
+     * @param count number of particles to generate
+     * @param vel   initial velocity of particles (x,y components)
+     * @param radius radius of particles
+     * @return the built simulation
      */
-    public static List<Particle> generateInitialState(int numParticles, double startingVelocity, double radius) {
-        final var collideables = Wall.generate(0.05);
+    public static Simulation buildSimulation(long steps, double L, int count, double vel, double radius) {
+        final var collideables = generateBox(L);
         final var walls = collideables.stream().filter(c -> c instanceof Wall).map(c -> (Wall) c).toList();
-        final var particles = new ArrayList<Particle>(numParticles);
+        final var particles = new ArrayList<Particle>(count);
 
-        for (int i = 0; i < numParticles; i++) {
+        for (int i = 0; i < count; i++) {
             final var theta = Math.random() * 2 * Math.PI;
-            final var velocity = new Vector(startingVelocity * Math.cos(theta), startingVelocity * Math.sin(theta));
+            final var velocity = new Vector(vel * Math.cos(theta), vel * Math.sin(theta));
 
             final var p = new Particle(null, velocity, radius);
             do {
@@ -66,11 +65,35 @@ public record Simulation(long steps, List<Particle> particles, List<Collideable>
             particles.add(p);
         }
 
-        if (particles.size() < numParticles) {
+        if (particles.size() < count) {
             throw new IllegalArgumentException("Radius too big or too many particles");
         }
 
-        return particles;
+        return new Simulation(steps, L, particles, collideables);
+    }
+
+    /**
+     * Generate the contour of the system
+     *
+     * @param L variable length of the right side
+     * @return collision time
+     */
+    private static List<Collideable> generateBox(double L) {
+        final var lilCorner = (0.09 - L) / 2.0;
+        final var c = new ArrayList<Collideable>(10);
+
+        c.add(new Wall(Orientation.HORIZONTAL, new Vector(0, 0), new Vector(0.09, 0), 0));
+        c.add(new Wall(Orientation.VERTICAL, new Vector(0.09, 0), new Vector(0.09, lilCorner), 1));
+        c.add(new Vertex(new Vector(0.09, lilCorner)));
+        c.add(new Wall(Orientation.HORIZONTAL, new Vector(0.09, lilCorner), new Vector(0.18, lilCorner), 2));
+        c.add(new Wall(Orientation.VERTICAL, new Vector(0.18, lilCorner), new Vector(0.18, lilCorner + L), 3));
+        c.add(new Wall(Orientation.HORIZONTAL, new Vector(0.18, lilCorner + L), new Vector(0.09, lilCorner + L), 4));
+        c.add(new Vertex(new Vector(0.09, lilCorner + L)));
+        c.add(new Wall(Orientation.VERTICAL, new Vector(0.09, lilCorner + L), new Vector(0.09, 0.09), 5));
+        c.add(new Wall(Orientation.HORIZONTAL, new Vector(0.09, 0.09), new Vector(0, 0.09), 6));
+        c.add(new Wall(Orientation.VERTICAL, new Vector(0, 0.09), new Vector(0, 0), 7));
+
+        return c;
     }
 
     /**
