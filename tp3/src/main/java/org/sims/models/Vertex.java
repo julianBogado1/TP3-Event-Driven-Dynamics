@@ -18,6 +18,11 @@ public record Vertex(Vector position, Particle ghost, long id) implements Collid
     }
 
     @Override
+    public String name() {
+        return "VERTEX";
+    }
+
+    @Override
     public Vertex clone() {
         return new Vertex(position, ghost.clone(), id);
     }

@@ -201,6 +201,11 @@ public class Particle implements Collideable {
     }
 
     @Override
+    public String name() {
+        return "PARTICLE";
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;

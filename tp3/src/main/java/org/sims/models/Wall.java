@@ -142,6 +142,11 @@ public record Wall(Wall.Orientation orientation, Vector a, Vector b, long id) im
     }
 
     @Override
+    public String name() {
+        return "WALL";
+    }
+
+    @Override
     public String toString() {
         return String.format("%s %s", a, b);
     }
