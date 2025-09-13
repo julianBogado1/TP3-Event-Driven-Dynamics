@@ -1,7 +1,6 @@
 package org.sims;
 
 import org.sims.Simulation.Step;
-import org.sims.models.Particle;
 import org.sims.models.Wall;
 import me.tongfei.progressbar.ProgressBar;
 
@@ -65,13 +64,7 @@ public class Main {
         @Override
         public void run() {
             try {
-                final var type = event.c() instanceof Particle ? "PARTICLE" : "WALL";
-                output.append("%.14f %s %d %d\n".formatted(
-                    event.time(), 
-                    type, 
-                    event.p().id(),
-                    event.c().id()
-                ));
+                output.append("%s\n".formatted(event));
                 pb.step();
             } catch (Exception e) {
                 e.printStackTrace();

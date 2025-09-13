@@ -39,6 +39,11 @@ public record Event(Particle p, Collideable c, double time, long etag)
     }
 
     @Override
+    public final String toString() {
+        return "%.14f %s %d %d".formatted(this.time, this.c.name(), this.p.id(), this.c.id());
+    }
+
+    @Override
     public int compareTo(Event o) {
         return Double.compare(this.time, o.time);
     }
