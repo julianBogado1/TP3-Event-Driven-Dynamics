@@ -61,7 +61,7 @@ public record Simulation(long steps, List<Particle> particles, List<Collideable>
             final var p = new Particle(null, velocity, radius);
             do {
                 p.setPosition(new Vector(Math.random() * MAGIC_NUMBER, Math.random() * MAGIC_NUMBER));
-            } while (checkValidPosition(p, walls) && checkNonOverlap(p, particles));
+            } while (!checkValidPosition(p, walls) || !checkNonOverlap(p, particles));
 
             particles.add(p);
         }
