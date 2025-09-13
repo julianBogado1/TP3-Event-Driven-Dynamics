@@ -27,7 +27,11 @@ public record Event(Particle p, Collideable c, double time, long etag)
     }
 
     public boolean valid(double currentTime) {
-        return this.time >= currentTime && this.etag == Event.etag(p, c);
+        return this.time >= currentTime && valid();
+    }
+
+    private boolean valid() {
+        return this.etag == Event.etag(p, c);
     }
 
     public Stream<Particle> involved() {
@@ -36,6 +40,11 @@ public record Event(Particle p, Collideable c, double time, long etag)
         }
 
         return Stream.of(p);
+    }
+
+    public void execute() {
+        if (valid())
+            c.collide(p);
     }
 
     @Override

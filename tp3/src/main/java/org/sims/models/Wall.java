@@ -41,6 +41,19 @@ public record Wall(Wall.Orientation orientation, Vector a, Vector b, long id) im
         }
     }
 
+    public void collide(Particle p) {
+        switch (orientation) {
+            case HORIZONTAL:
+                p.setVelocity(new Vector(p.getVelocity().x(), -p.getVelocity().y()));
+                break;
+            case VERTICAL:
+                p.setVelocity(new Vector(-p.getVelocity().x(), p.getVelocity().y()));
+                break;
+            default:
+                throw new IllegalArgumentException("Unsuported wall orientation");
+        }
+    }
+
     @Override
     public Wall clone() {
         return new Wall(orientation, a, b, id);

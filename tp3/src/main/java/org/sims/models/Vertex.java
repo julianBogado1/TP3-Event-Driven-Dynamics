@@ -13,6 +13,11 @@ public record Vertex(Vector position, Particle ghost, long id) implements Collid
     }
 
     @Override
+    public void collide(Particle p) {
+        p.setVelocity(p.getVelocity().neg());
+    }
+
+    @Override
     public String toString() {
         return "%s".formatted(position);
     }
