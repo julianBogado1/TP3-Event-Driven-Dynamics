@@ -20,7 +20,7 @@ class SequentialStreamingExecutor[I, O]:
         self.manager = mp.Manager()
         self.shared_dict: DictProxy[I, O] = self.manager.dict()
         self.condition = self.manager.Condition()
-        self.pool = mp.Pool(processes=12)
+        self.pool = mp.Pool()
         self.inputs = inputs
         self.count = 0
 
