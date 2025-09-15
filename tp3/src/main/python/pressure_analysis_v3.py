@@ -119,7 +119,7 @@ class ImpulsePressureAnalyzer:
             with open(step_file_path, 'r') as f:
                 for line in f:
                     parts = line.strip().split()
-                    if len(parts) >= 5:
+                    if len(parts) >= 4:
                         # Format: x y vx vy radius
                         vx = self.parse_float(parts[2])
                         vy = self.parse_float(parts[3])
@@ -147,7 +147,7 @@ class ImpulsePressureAnalyzer:
             with open(step_file, 'r') as f:
                 for particle_idx, line in enumerate(f):
                     parts = line.strip().split()
-                    if len(parts) >= 5:
+                    if len(parts) >= 4:
                         # Format: x y vx vy radius
                         vx = self.parse_float(parts[2])
                         vy = self.parse_float(parts[3])
