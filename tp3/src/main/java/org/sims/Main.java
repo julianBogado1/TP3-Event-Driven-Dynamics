@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        final var sim = Simulation.buildSimulation(100_000, 0.07, 300, 0.01, 0.0015);
+        final var sim = Simulation.buildSimulation(args[0], args[1], args[2]);
 
         try (final var writer = Resources.writer("setup.txt")) {
             writer.write("%d %.14f\n".formatted(sim.particles().size(), sim.L()));

@@ -44,6 +44,18 @@ public record Simulation(long steps, double L, List<Particle> particles, List<Co
      * @param steps number of steps to simulate
      * @param L     variable length of the right side
      * @param count number of particles to generate
+     * @return the built simulation, with default initial velocity 0.01 and radius 0.0015
+     */
+    public static Simulation buildSimulation(String steps, String L, String count) {
+        return buildSimulation(Long.valueOf(steps), Double.valueOf(L), Integer.valueOf(count), 0.01, 0.0015);
+    }
+
+    /**
+     * Build a simulation with particles of random positions and radii
+     *
+     * @param steps number of steps to simulate
+     * @param L     variable length of the right side
+     * @param count number of particles to generate
      * @param vel   initial velocity of particles (x,y components)
      * @param radius radius of particles
      * @return the built simulation
