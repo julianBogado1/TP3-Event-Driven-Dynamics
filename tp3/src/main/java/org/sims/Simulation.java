@@ -124,13 +124,13 @@ public record Simulation(long steps, double L, List<Particle> particles, List<Co
         double minX = 0.0, maxX = 0.09;
         double minY = 0.0, maxY = 0.09;
 
-        System.out.println("particle: " + p);
-        System.out.println("MinX: " + minX + " MaxX: " + maxX + "MinY:  " + minY + "MaxY:  " + maxY);
-        System.out.println(
-                "Check X: " + ((pos.x() - radius >= minX) &&
-                        (pos.x() + radius <= maxX)) + " Check Y: "
-                        + ((pos.y() - radius >= minY) &&
-                                (pos.y() + radius <= maxY)));
+        // System.out.println("particle: " + p);
+        // System.out.println("MinX: " + minX + " MaxX: " + maxX + "MinY:  " + minY + "MaxY:  " + maxY);
+        // System.out.println(
+        //         "Check X: " + ((pos.x() - radius >= minX) &&
+        //                 (pos.x() + radius <= maxX)) + " Check Y: "
+        //                 + ((pos.y() - radius >= minY) &&
+        //                         (pos.y() + radius <= maxY)));
 
         // Check if particle (considering its radius) is within bounds
         return (pos.x() - radius >= minX) &&
