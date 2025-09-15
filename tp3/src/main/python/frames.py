@@ -4,7 +4,7 @@ from classes.particle import Particle
 import resources
 
 @cache
-def checkpoints():
+def checkpoints(interval: float = 0.015):
     with open(resources.path('events.txt'), 'r') as file:
         event_times = [float(line.strip().split(' ')[0]) for line in file if line.strip()]
 
@@ -12,7 +12,7 @@ def checkpoints():
     previous = 0.0
 
     for i, time in enumerate(event_times):
-        if time > previous + 0.015:
+        if time > previous + interval:
             checkpoints.append(i)
             previous = time
 
