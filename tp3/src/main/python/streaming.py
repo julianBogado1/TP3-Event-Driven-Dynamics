@@ -1,6 +1,7 @@
 from typing import Callable, Iterable
 
 import multiprocessing as mp
+from multiprocessing.managers import DictProxy
 
 class SequentialStreamingExecutor[I, O]:
     """
@@ -17,7 +18,7 @@ class SequentialStreamingExecutor[I, O]:
         :param count: The number of tasks required to execute.
         """
         self.manager = mp.Manager()
-        self.shared_dict = self.manager.dict()
+        self.shared_dict: DictProxy[I, O] = self.manager.dict()
         self.condition = self.manager.Condition()
         self.pool = mp.Pool(processes=12)
         self.inputs = inputs
