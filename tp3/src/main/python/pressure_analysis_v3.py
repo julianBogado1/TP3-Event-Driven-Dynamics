@@ -151,8 +151,8 @@ class ImpulsePressureAnalyzer:
                         # Format: x y vx vy radius
                         vx = self.parse_float(parts[2])
                         vy = self.parse_float(parts[3])
-                        # Particle IDs start from 1, but file lines start from 0
-                        particles[particle_idx + 1] = Vector(vx, vy)
+                        # Particle IDs start from 2, but file lines start from 0
+                        particles[particle_idx + 2] = Vector(vx, vy)
 
             # Cache the loaded data
             self.step_cache[step_index] = list(particles.items())
