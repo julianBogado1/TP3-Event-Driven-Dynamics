@@ -1,7 +1,6 @@
 import os
 
 import matplotlib.pyplot as plt
-from matplotlib.ticker import FuncFormatter
 
 import numpy as np
 
@@ -41,13 +40,6 @@ def main():
 if __name__ == '__main__':
     X, Y, ERR = main()
 
-    def sci_notation(val: float, _):
-        if val == 0:
-            return rf"$0\times 10^{{0}}$"
-        exponent = int(np.floor(np.log10(abs(val))))
-        coeff = val / (10**exponent)
-        return rf"${coeff:.1f}\times 10^{{{exponent}}}$"
-
     plt.errorbar(X, Y, yerr=ERR, fmt='o') # pyright: ignore[reportUnknownMemberType]
 
     plt.xticks(X) # pyright: ignore[reportUnknownMemberType]
@@ -55,8 +47,6 @@ if __name__ == '__main__':
 
     # plt.yticks(Y) # pyright: ignore[reportUnknownMemberType]
     plt.ylabel(r"$P$ $[N/m^2]$") # pyright: ignore[reportUnknownMemberType]
-
-    plt.gca().yaxis.set_major_formatter(FuncFormatter(sci_notation)) # pyright: ignore[reportUnknownArgumentType]
 
     plt.grid(True) # pyright: ignore[reportUnknownMemberType]
     plt.show() # pyright: ignore[reportUnknownMemberType]
