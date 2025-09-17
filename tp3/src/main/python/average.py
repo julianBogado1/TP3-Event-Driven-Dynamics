@@ -62,23 +62,23 @@ def main(cut: int = 60):
 
     for i, particles in tqdm(enumerate(executor.stream()), total=len(events)):
         if i in checkpoints:
-            P_izq = (total_impulse_izq / (INTERVAL * Y_MAX)) + (total_impulse_cen / INTERVAL * (Y_MAX - L))
-            P_der = total_impulse_der / (INTERVAL * Y_MAX)
+            PL = (total_impulse_izq / (INTERVAL * Y_MAX)) + (total_impulse_cen / INTERVAL * (Y_MAX - L))
+            PR = total_impulse_der / (INTERVAL * Y_MAX)
 
-            pressures_izq.append(P_izq)
-            pressures_der.append(P_der)
+            pressures_izq.append(PL)
+            pressures_der.append(PR)
             times.append(events[i].time)
 
             total_impulse_izq = 0.0
             total_impulse_cen = 0.0
             total_impulse_der = 0.0
 
-        p = particles[events[i].a - 2]
+        P = particles[events[i].a - 2]
         # x, y = p.position.tuple()
-        vx, vy = p.velocity.tuple()
+        vx, vy = P.velocity.tuple()
 
         if events[i].type != 'WALL':
-            total_impulse_cen += 2 * M * p.velocity.norm()
+            total_impulse_cen += 2 * M * P.velocity.norm()
             continue
 
         WALL_ID = events[i].b
