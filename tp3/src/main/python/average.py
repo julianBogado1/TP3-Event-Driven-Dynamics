@@ -65,7 +65,7 @@ def main():
 
             pressures_izq.append(P_izq)
             pressures_der.append(P_der)
-            times.append((i + 1) * INTERVAL)
+            times.append(events[i].time)
 
             total_impulse_izq = 0.0
             total_impulse_cen = 0.0
