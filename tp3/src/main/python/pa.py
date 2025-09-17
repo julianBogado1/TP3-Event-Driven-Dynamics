@@ -46,7 +46,7 @@ if __name__ == '__main__':
         coeff = val / (10**exponent)
         return rf"${coeff:.1f}\times 10^{{{exponent}}}$"
 
-    plt.errorbar(X, Y, yerr=ERR, fmt='o-') # pyright: ignore[reportUnknownMemberType]
+    plt.errorbar(X, Y, yerr=ERR, fmt='o') # pyright: ignore[reportUnknownMemberType]
 
     plt.xticks(X) # pyright: ignore[reportUnknownMemberType]
     plt.xlabel(r"$A^{-1}$ $[1/m^2]$") # pyright: ignore[reportUnknownMemberType]
