@@ -116,11 +116,11 @@ if __name__ == "__main__":
     i, pl, al, pr, ar, times = main(args.c)
 
     if args.p:
-        plt.plot(times[i:], pl[i:], color='r') # pyright: ignore[reportUnknownMemberType]
-        plt.axhline(y=float(al), color='r', linestyle='--') # pyright: ignore[reportUnknownMemberType]
+        plt.plot(times[i:], pl[i:], color='b') # pyright: ignore[reportUnknownMemberType]
+        plt.axhline(y=float(al), color='b', linestyle='--') # pyright: ignore[reportUnknownMemberType]
 
-        plt.plot(times[i:], pr[i:], color='b') # pyright: ignore[reportUnknownMemberType]
-        plt.axhline(y=float(ar), color='b', linestyle='--') # pyright: ignore[reportUnknownMemberType]
+        plt.plot(times[i:], pr[i:], color='r') # pyright: ignore[reportUnknownMemberType]
+        plt.axhline(y=float(ar), color='r', linestyle='--') # pyright: ignore[reportUnknownMemberType]
 
         plt.xlabel("P") # pyright: ignore[reportUnknownMemberType]
         plt.ylabel("t") # pyright: ignore[reportUnknownMemberType]
