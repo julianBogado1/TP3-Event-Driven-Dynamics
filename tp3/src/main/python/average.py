@@ -122,7 +122,7 @@ if __name__ == "__main__":
         plt.plot(times[i:], pr[i:], color='r') # pyright: ignore[reportUnknownMemberType]
         plt.axhline(y=float(ar), color='r', linestyle='--') # pyright: ignore[reportUnknownMemberType]
 
-        plt.xlabel("P") # pyright: ignore[reportUnknownMemberType]
-        plt.ylabel("t") # pyright: ignore[reportUnknownMemberType]
+        plt.xlabel(r"$t$ $[s]$") # pyright: ignore[reportUnknownMemberType]
+        plt.ylabel(r"$P$ $[N/m^2]$") # pyright: ignore[reportUnknownMemberType]
 
         plt.show() # pyright: ignore[reportUnknownMemberType]
