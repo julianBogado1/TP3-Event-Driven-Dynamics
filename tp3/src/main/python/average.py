@@ -92,10 +92,10 @@ def main():
             total_impulse_der += J
 
     cut = int(sys.argv[1]) if len(sys.argv) > 1 else 60
-    i0 = times.index(next(t for t in times if t >= cut))
+    I0 = next(i for i, t in enumerate(times) if t >= cut)
 
-    prom_izq = np.mean(pressures_izq[i0:])
-    prom_der = np.mean(pressures_der[i0:])
+    prom_izq = np.mean(pressures_izq[I0:])
+    prom_der = np.mean(pressures_der[I0:])
 
     dir = resources.path("pressure", str(L))
     os.makedirs(dir, exist_ok=True)
