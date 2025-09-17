@@ -14,11 +14,11 @@ AREANT = {
     '0.09':  64.9392817715
 }
 
-X:   list[float]       = []
-Y:   list[np.floating] = []
-ERR: list[np.floating] = []
-
 def main():
+    X:   list[float]       = []
+    Y:   list[np.floating] = []
+    ERR: list[np.floating] = []
+
     for L in os.listdir(resources.path('pressure')):
         INV = AREANT.get(L, 0)
 
@@ -36,8 +36,10 @@ def main():
         Y.append(np.mean(pressures))
         ERR.append(np.std(pressures))
 
+    return X, Y, ERR
+
 if __name__ == '__main__':
-    main()
+    X, Y, ERR = main()
 
     def sci_notation(val: float, _):
         if val == 0:
