@@ -62,8 +62,8 @@ def main(cut: int = 60):
 
     for i, particles in tqdm(enumerate(executor.stream()), total=len(events)):
         if i in checkpoints:
-            PL = (total_impulse_izq / (INTERVAL * Y_MAX)) + (total_impulse_cen / INTERVAL * (Y_MAX - L))
-            PR = total_impulse_der / (INTERVAL * Y_MAX)
+            PL = total_impulse_izq / (INTERVAL * Y_MAX * 3)
+            PR = total_impulse_der / (INTERVAL * (Y_MAX * 2 + L))
 
             pressures_izq.append(PL)
             pressures_der.append(PR)
