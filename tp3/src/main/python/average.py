@@ -104,9 +104,9 @@ def main():
     with open(file, "w") as f:
         f.write(f"{prom_izq} {prom_der}\n")
 
-    return pressures_izq, pressures_der, times
+    return I0, pressures_izq, prom_izq, pressures_der, prom_der, times
 
 if __name__ == "__main__":
-    pressures_izq, pressures_der, times = main()
+    i, pl, al, pr, ar, times = main()
 
     # We could plot here
