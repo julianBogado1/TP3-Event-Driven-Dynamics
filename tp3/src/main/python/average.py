@@ -6,6 +6,8 @@ import numpy as np
 
 from tqdm import tqdm
 
+from matplotlib import pyplot as plt
+
 import frames
 import resources
 from classes.event import Event
@@ -108,8 +110,19 @@ def main(cut: int = 60):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", type=float, default=60, help="Balance cut time")
+    parser.add_argument("-p", action="store_true", help="Show plot")
     args = parser.parse_args()
 
     i, pl, al, pr, ar, times = main(args.c)
 
-    # We could plot here
+    if args.p:
+        plt.plot(times[i:], pl[i:], color='r') # pyright: ignore[reportUnknownMemberType]
+        plt.axhline(y=float(al), color='r', linestyle='--') # pyright: ignore[reportUnknownMemberType]
+
+        plt.plot(times[i:], pr[i:], color='b') # pyright: ignore[reportUnknownMemberType]
+        plt.axhline(y=float(ar), color='b', linestyle='--') # pyright: ignore[reportUnknownMemberType]
+
+        plt.xlabel("P") # pyright: ignore[reportUnknownMemberType]
+        plt.ylabel("t") # pyright: ignore[reportUnknownMemberType]
+
+        plt.show() # pyright: ignore[reportUnknownMemberType]
