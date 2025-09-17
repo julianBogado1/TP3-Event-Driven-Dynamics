@@ -1,6 +1,6 @@
 import os
-import sys
 import time
+import argparse
 
 import numpy as np
 
@@ -28,7 +28,7 @@ CHAMBERS: dict[int, tuple[str, str]] = {
     7: ('left', 'vertical')
 }
 
-def main():
+def main(cut: int = 60):
     with open(resources.path('events.txt'), 'r') as file:
         events = [
             Event(i, line.strip().split(' '))
@@ -91,7 +91,6 @@ def main():
         elif chamber == 'right':
             total_impulse_der += J
 
-    cut = int(sys.argv[1]) if len(sys.argv) > 1 else 60
     I0 = next(i for i, t in enumerate(times) if t >= cut)
 
     prom_izq = np.mean(pressures_izq[I0:])
@@ -107,6 +106,10 @@ def main():
     return I0, pressures_izq, prom_izq, pressures_der, prom_der, times
 
 if __name__ == "__main__":
-    i, pl, al, pr, ar, times = main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-c", type=float, default=60, help="Balance cut time")
+    args = parser.parse_args()
+
+    i, pl, al, pr, ar, times = main(args.c)
 
     # We could plot here
