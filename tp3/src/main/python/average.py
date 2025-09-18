@@ -30,7 +30,7 @@ CHAMBERS: dict[int, tuple[str, str]] = {
     7: ('left', 'vertical')
 }
 
-def main(cut: int = 60):
+def main(cut: int = 60, dry: bool = False):
     with open(resources.path('events.txt'), 'r') as file:
         events = [
             Event(i, line.strip().split(' '))
@@ -98,12 +98,13 @@ def main(cut: int = 60):
     prom_izq = np.mean(pressures_izq[I0:])
     prom_der = np.mean(pressures_der[I0:])
 
-    dir = resources.path("pressure", str(L))
-    os.makedirs(dir, exist_ok=True)
+    if not dry:
+        dir = resources.path("pressure", str(L))
+        os.makedirs(dir, exist_ok=True)
 
-    file = resources.path(dir, f"{int(time.time())}.txt")
-    with open(file, "w") as f:
-        f.write(f"{prom_izq} {prom_der}\n")
+        file = resources.path(dir, f"{int(time.time())}.txt")
+        with open(file, "w") as f:
+            f.write(f"{prom_izq} {prom_der}\n")
 
     return I0, pressures_izq, prom_izq, pressures_der, prom_der, times
 
@@ -111,9 +112,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", type=float, default=60, help="Balance cut time")
     parser.add_argument("-p", action="store_true", help="Show plot")
+    parser.add_argument("--dry", action="store_true", help="Don't output results")
     args = parser.parse_args()
 
-    i, pl, al, pr, ar, times = main(args.c)
+    i, pl, al, pr, ar, times = main(args.c, args.dry)
 
     if args.p:
         plt.plot(times[i:], pl[i:], color='b') # pyright: ignore[reportUnknownMemberType]
