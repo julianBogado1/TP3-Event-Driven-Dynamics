@@ -118,18 +118,20 @@ if __name__ == "__main__":
     i, pl, al, pr, ar, times = main(args.c, args.dry)
 
     if args.p:
-        plt.axvline(x=args.c, color='black', linestyle='-') # pyright: ignore[reportUnknownMemberType]
+        plt.axvline(x=args.c, color='black', linestyle='-', label='Estacionario') # pyright: ignore[reportUnknownMemberType]
 
-        plt.plot(times, pl, color='b') # pyright: ignore[reportUnknownMemberType]
-        plt.axhline(y=float(al), color='b', linestyle='--') # pyright: ignore[reportUnknownMemberType]
+        plt.plot(times, pl, color='b', label='Recinto izquierdo') # pyright: ignore[reportUnknownMemberType]
+        plt.axhline(y=float(al), color='b', linestyle='--', label='Promedio izquierdo') # pyright: ignore[reportUnknownMemberType]
 
-        plt.plot(times, pr, color='r') # pyright: ignore[reportUnknownMemberType]
-        plt.axhline(y=float(ar), color='r', linestyle='--') # pyright: ignore[reportUnknownMemberType]
+        plt.plot(times, pr, color='r', label='Recinto derecho') # pyright: ignore[reportUnknownMemberType]
+        plt.axhline(y=float(ar), color='r', linestyle='--', label='Promedio derecho') # pyright: ignore[reportUnknownMemberType]
 
         plt.xticks(fontsize=24) # pyright: ignore[reportArgumentType, reportUnknownMemberType]
         plt.yticks(fontsize=24) # pyright: ignore[reportUnknownMemberType]
 
         plt.xlabel(r"$t$ $(s)$", fontsize=24) # pyright: ignore[reportUnknownMemberType]
         plt.ylabel(r"$P$ $(N/m)$", fontsize=24) # pyright: ignore[reportUnknownMemberType]
+
+        plt.legend() # pyright: ignore[reportUnknownMemberType]
 
         plt.show() # pyright: ignore[reportUnknownMemberType]
