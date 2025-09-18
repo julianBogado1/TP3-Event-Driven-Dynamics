@@ -45,10 +45,10 @@ def study(name: str):
         return s, ax[0], ax[1], fit, sci[0], sci[1]
 
     return {
-        'length': study(LENGTHS, (r"$L$ $[m]$", r"$P$ $[N/m^2]$")),
-        'area': study(AREA, (r"$A$ $[m^2]$", r"$P$ $[N/m^2]$"), False, (True, False)),
-        'areant': study(AREANT, (r"$A^{-1}$ $[1/m^2]$", r"$P$ $[N/m^2]$"), True),
-        'pa': study(PA, (r"$L$ $[m]$", r"$PA$ $[Nm^2]$"))
+        'length': study(LENGTHS, (r"$L$ $[m]$", r"$‹P›$ $[N/m^2]$")),
+        'area': study(AREA, (r"$A$ $[m^2]$", r"$‹P›$ $[N/m^2]$"), False, (True, False)),
+        'areant': study(AREANT, (r"$A^{-1}$ $[1/m^2]$", r"$‹P›$ $[N/m^2]$"), True),
+        'pa': study(PA, (r"$L$ $[m]$", r"$‹P›A$ $[Nm^2]$"))
     }.get(name)
 
 def main(val: Study):
