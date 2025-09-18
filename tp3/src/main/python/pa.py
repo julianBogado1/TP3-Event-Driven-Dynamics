@@ -12,40 +12,44 @@ import resources
 Fx = Callable[[float], tuple[float, float]]
 Study = dict[str, Fx]
 
-LENGTHS: Study = {
-    '0.03': lambda p: (0.03, p),
-    '0.05': lambda p: (0.05, p),
-    '0.07': lambda p: (0.07, p),
-    '0.09': lambda p: (0.09, p)
-}
+def study(name: str):
+    LENGTHS: Study = {
+        '0.03': lambda p: (0.03, p),
+        '0.05': lambda p: (0.05, p),
+        '0.07': lambda p: (0.07, p),
+        '0.09': lambda p: (0.09, p)
+    }
 
-AREA: Study = {
-    '0.03': lambda p: (0.009999, p),
-    '0.05': lambda p: (0.011799, p),
-    '0.07': lambda p: (0.013599, p),
-    '0.09': lambda p: (0.015399, p)
-}
+    AREA: Study = {
+        '0.03': lambda p: (0.009999, p),
+        '0.05': lambda p: (0.011799, p),
+        '0.07': lambda p: (0.013599, p),
+        '0.09': lambda p: (0.015399, p)
+    }
 
-AREANT: Study = {
-    '0.03': lambda p: (100.0100010001, p),
-    '0.05': lambda p: ( 84.7529451648, p),
-    '0.07': lambda p: ( 73.5348187367, p),
-    '0.09': lambda p: ( 64.9392817715, p)
-}
+    AREANT: Study = {
+        '0.03': lambda p: (100.0100010001, p),
+        '0.05': lambda p: ( 84.7529451648, p),
+        '0.07': lambda p: ( 73.5348187367, p),
+        '0.09': lambda p: ( 64.9392817715, p)
+    }
 
-PA: Study = {
-    '0.03': lambda p: (0.03, p * 0.009999),
-    '0.05': lambda p: (0.05, p * 0.011799),
-    '0.07': lambda p: (0.07, p * 0.013599),
-    '0.09': lambda p: (0.09, p * 0.015399)
-}
+    PA: Study = {
+        '0.03': lambda p: (0.03, p * 0.009999),
+        '0.05': lambda p: (0.05, p * 0.011799),
+        '0.07': lambda p: (0.07, p * 0.013599),
+        '0.09': lambda p: (0.09, p * 0.015399)
+    }
 
-STUDIES = {
-    'length': (LENGTHS, r"$L$ $[m]$", r"$P$ $[N/m^2]$", False, False, False),
-    'area': (AREA, r"$A$ $[m^2]$", r"$P$ $[N/m^2]$", False, True, False),
-    'areant': (AREANT, r"$A^{-1}$ $[1/m^2]$", r"$P$ $[N/m^2]$", True, False, False),
-    'pa': (PA, r"$L$ $[m]$", r"$PA$ $[Nm^2]$", False, False, False)
-}
+    def study(s: Study, ax: tuple[str, str], fit: bool = False, sci: tuple[bool, bool] = (False, False)):
+        return s, ax[0], ax[1], fit, sci[0], sci[1]
+
+    return {
+        'length': study(LENGTHS, (r"$L$ $[m]$", r"$P$ $[N/m^2]$")),
+        'area': study(AREA, (r"$A$ $[m^2]$", r"$P$ $[N/m^2]$"), False, (True, False)),
+        'areant': study(AREANT, (r"$A^{-1}$ $[1/m^2]$", r"$P$ $[N/m^2]$"), True),
+        'pa': study(PA, (r"$L$ $[m]$", r"$PA$ $[Nm^2]$"))
+    }.get(name)
 
 def main(val: Study):
     X:   list[float]       = []
@@ -90,7 +94,7 @@ if __name__ == '__main__':
         print("Usage: pa.py <length|area|areant|pa>")
         sys.exit(1)
 
-    STUDY = STUDIES.get(sys.argv[1].lower())
+    STUDY = study(sys.argv[1].lower())
     if STUDY is None:
         print("Invalid argument. Use one of: length, area, areant, pa")
         sys.exit(1)
