@@ -110,7 +110,7 @@ if __name__ == '__main__':
     if FIT:
         LINE = np.linspace(X[0], X[-1], 1000)
         B = origin((X[0], Y[0]), (X[-1], Y[-1]))
-        _, _, M, _ = fitter(np.array(X), np.array(Y), LINEAR(B), 0, 0.029)
+        _, _, M, _ = fitter(np.array(X), np.array(Y), LINEAR(B), 0, 0.027)
         plt.plot(LINE, M * LINE + B, color='red') # pyright: ignore[reportUnknownMemberType]
 
     plt.xticks(X, fontsize=FS) # pyright: ignore[reportUnknownMemberType]
