@@ -32,10 +32,18 @@ AREANT: Study = {
     '0.09': lambda p: ( 64.9392817715, p)
 }
 
+PA: Study = {
+    '0.03': lambda p: (0.03, p * 0.009999),
+    '0.05': lambda p: (0.05, p * 0.011799),
+    '0.07': lambda p: (0.07, p * 0.013599),
+    '0.09': lambda p: (0.09, p * 0.015399)
+}
+
 STUDIES = {
     'length': (LENGTHS, r"$L$ $[m]$", r"$P$ $[N/m^2]$", False),
     'area': (AREA, r"$A$ $[m^2]$", r"$P$ $[N/m^2]$", False),
-    'areant': (AREANT, r"$A^{-1}$ $[1/m^2]$", r"$P$ $[N/m^2]$", True)
+    'areant': (AREANT, r"$A^{-1}$ $[1/m^2]$", r"$P$ $[N/m^2]$", True),
+    'pa': (PA, r"$L$ $[m]$", r"$PA$ $[Nm^2]$", False)
 }
 
 def main(val: Study):
@@ -65,12 +73,12 @@ def main(val: Study):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Usage: pa.py <length|area|areant>")
+        print("Usage: pa.py <length|area|areant|pa>")
         sys.exit(1)
 
     STUDY = STUDIES.get(sys.argv[1].lower())
     if STUDY is None:
-        print("Invalid argument. Use one of: length, area, areant")
+        print("Invalid argument. Use one of: length, area, areant, pa")
         sys.exit(1)
 
     VALUES, LABEL_X, LABEL_Y, FIT = STUDY
