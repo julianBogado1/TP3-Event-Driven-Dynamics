@@ -12,8 +12,8 @@ def parse_steps(step):
 
 def get_stationary():
     """Index del primer evento después de 60 s"""
-    for i, ev in enumerate(parse_events()):
-        if float(ev[0]) > 60:
+    for i, event in enumerate(parse_events()):
+        if float(event[0]) > 60:
             return i
     return -1
 
@@ -37,7 +37,8 @@ def compute_quadratic_displacement():
     step_files = sorted(
         [int(f.split(".")[0]) for f in os.listdir(steps_dir) if f.endswith(".txt")]
     )
-    for step in step_files:
+    for i in range(stationary_idx, len(step_files), 50):   # <-- every 25
+        step = step_files[i]
         if step < stationary_idx:
             continue
         # tiempo real de este step: usar events.txt para obtener timestamp
@@ -53,14 +54,33 @@ def compute_quadratic_displacement():
             msd = np.mean(squared_displacements)
             times.append(t)
             msd_values.append(msd)
+    return times, msd_values
 
-    # Graficar
-    plt.plot(times, msd_values, marker='o')
+def linear_fit(times, msd_values):
+    coeffs = np.polyfit(times, msd_values, 1)
+    return coeffs  # pendiente y ordenada al origen
+
+def plot_msd(times, msd_values, slope, intercept):
+    plt.plot(times, msd_values, 'o', label='Datos MSD')
+    plt.plot(times, np.array(times)*slope + intercept, 'r-', label='Ajuste lineal')
     plt.xlabel("Tiempo (s)")
     plt.ylabel("MSD")
     plt.title("Desplazamiento cuadrático medio desde t0=60 s")
+    plt.legend()
     plt.grid(True)
     plt.show()
 
+    # # Graficar
+    # plt.plot(times, msd_values, marker='o')
+    # plt.xlabel("Tiempo (s)")
+    # plt.ylabel("MSD")
+    # plt.title("Desplazamiento cuadrático medio desde t0=60 s")
+    # plt.grid(True)
+    # plt.show()
+
 if __name__ == "__main__":
-    compute_quadratic_displacement()
+    # compute_quadratic_displacement()
+    times, msd_values = compute_quadratic_displacement()
+    slope, intercept = linear_fit(times, msd_values)
+    print(f"Pendiente: {slope}, Intercepto: {intercept}")
+    plot_msd(times, msd_values, slope, intercept)
