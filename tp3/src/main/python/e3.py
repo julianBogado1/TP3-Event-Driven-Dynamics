@@ -16,7 +16,6 @@ def main(F: FIT):
     Y = np.array(RESULTS[1])
 
     C, E, MIN_X, MIN_Y = fitter(X, Y, F, 0, 0.029)
-    print(f'C: {MIN_X:.4f}')
 
     plot(C, E, MIN_X, MIN_Y)
 

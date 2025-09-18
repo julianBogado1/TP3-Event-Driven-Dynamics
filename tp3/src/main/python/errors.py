@@ -45,7 +45,6 @@ def plot(C: np.ndarray, E: np.ndarray, MIN_X: float, MIN_Y: float):
 
 def origin(P1: tuple[float, float], P2: tuple[float, float]):
     M = (P2[1] - P1[1]) / (P2[0] - P1[0])
-    print(M)
     return P1[1] - M * P1[0]
 
 def LINEAR(B: float):
