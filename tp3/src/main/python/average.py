@@ -129,7 +129,7 @@ if __name__ == "__main__":
         plt.xticks(fontsize=24) # pyright: ignore[reportArgumentType, reportUnknownMemberType]
         plt.yticks(fontsize=24) # pyright: ignore[reportUnknownMemberType]
 
-        plt.xlabel(r"$t$ $[s]$", fontsize=24) # pyright: ignore[reportUnknownMemberType]
-        plt.ylabel(r"$P$ $[N/m^2]$", fontsize=24) # pyright: ignore[reportUnknownMemberType]
+        plt.xlabel(r"$t$ $(s)$", fontsize=24) # pyright: ignore[reportUnknownMemberType]
+        plt.ylabel(r"$P$ $(N/m)$", fontsize=24) # pyright: ignore[reportUnknownMemberType]
 
         plt.show() # pyright: ignore[reportUnknownMemberType]
