@@ -95,6 +95,7 @@ if __name__ == '__main__':
         print("Invalid argument. Use one of: length, area, areant, pa")
         sys.exit(1)
 
+    FS = 24
     VALUES, LABEL_X, LABEL_Y, FIT, SCI_X, SCI_Y = STUDY
 
     X, Y, ERR = main(VALUES)
@@ -105,11 +106,11 @@ if __name__ == '__main__':
         M, B = np.polyfit(X, Y, 1)
         plt.plot(X, M * np.array(X) + B, color='red') # pyright: ignore[reportUnknownMemberType]
 
-    plt.xticks(X) # pyright: ignore[reportUnknownMemberType]
-    plt.xlabel(LABEL_X) # pyright: ignore[reportUnknownMemberType]
+    plt.xticks(X, fontsize=FS) # pyright: ignore[reportUnknownMemberType]
+    plt.xlabel(LABEL_X, fontsize=FS) # pyright: ignore[reportUnknownMemberType]
 
-    # plt.yticks(Y) # pyright: ignore[reportUnknownMemberType]
-    plt.ylabel(LABEL_Y) # pyright: ignore[reportUnknownMemberType]
+    plt.yticks(fontsize=FS) # pyright: ignore[reportUnknownMemberType]
+    plt.ylabel(LABEL_Y, fontsize=FS) # pyright: ignore[reportUnknownMemberType]
 
     if SCI_X:
         plt.gca().xaxis.set_major_formatter(FuncFormatter(sci_notation)) # pyright: ignore[reportUnknownArgumentType]
