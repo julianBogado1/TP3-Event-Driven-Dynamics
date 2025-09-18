@@ -126,7 +126,7 @@ if __name__ == "__main__":
         plt.plot(times, pr, color='r', label='Recinto derecho') # pyright: ignore[reportUnknownMemberType]
         plt.axhline(y=float(ar), color='r', linestyle='--', label='Promedio derecho') # pyright: ignore[reportUnknownMemberType]
 
-        plt.xticks(fontsize=24) # pyright: ignore[reportArgumentType, reportUnknownMemberType]
+        plt.xticks(fontsize=24) # pyright: ignore[reportUnknownMemberType]
         plt.yticks(fontsize=24) # pyright: ignore[reportUnknownMemberType]
 
         plt.xlabel(r"$t$ $(s)$", fontsize=24) # pyright: ignore[reportUnknownMemberType]
