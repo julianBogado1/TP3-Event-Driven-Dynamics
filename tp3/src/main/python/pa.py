@@ -3,6 +3,7 @@ import sys
 from typing import Callable
 
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 
 import numpy as np
 
@@ -40,10 +41,10 @@ PA: Study = {
 }
 
 STUDIES = {
-    'length': (LENGTHS, r"$L$ $[m]$", r"$P$ $[N/m^2]$", False),
-    'area': (AREA, r"$A$ $[m^2]$", r"$P$ $[N/m^2]$", False),
-    'areant': (AREANT, r"$A^{-1}$ $[1/m^2]$", r"$P$ $[N/m^2]$", True),
-    'pa': (PA, r"$L$ $[m]$", r"$PA$ $[Nm^2]$", False)
+    'length': (LENGTHS, r"$L$ $[m]$", r"$P$ $[N/m^2]$", False, False, False),
+    'area': (AREA, r"$A$ $[m^2]$", r"$P$ $[N/m^2]$", False, True, False),
+    'areant': (AREANT, r"$A^{-1}$ $[1/m^2]$", r"$P$ $[N/m^2]$", True, False, False),
+    'pa': (PA, r"$L$ $[m]$", r"$PA$ $[Nm^2]$", False, False, False)
 }
 
 def main(val: Study):
@@ -71,6 +72,19 @@ def main(val: Study):
 
     return X, Y, ERR
 
+def truncate_at_most_2(n: float) -> str:
+    TRUNC = int(n * 100) / 100
+    return str(TRUNC).rstrip('0').rstrip('.')
+
+def sci_notation(val: float, _):
+    if val == 0:
+        return "0"
+
+    EXP = int(np.floor(np.log10(abs(val))))
+    COEFF = val / (10**EXP)
+
+    return rf"${truncate_at_most_2(COEFF)}\times 10^{{{EXP}}}$"
+
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         print("Usage: pa.py <length|area|areant|pa>")
@@ -81,7 +95,7 @@ if __name__ == '__main__':
         print("Invalid argument. Use one of: length, area, areant, pa")
         sys.exit(1)
 
-    VALUES, LABEL_X, LABEL_Y, FIT = STUDY
+    VALUES, LABEL_X, LABEL_Y, FIT, SCI_X, SCI_Y = STUDY
 
     X, Y, ERR = main(VALUES)
 
@@ -96,6 +110,12 @@ if __name__ == '__main__':
 
     # plt.yticks(Y) # pyright: ignore[reportUnknownMemberType]
     plt.ylabel(LABEL_Y) # pyright: ignore[reportUnknownMemberType]
+
+    if SCI_X:
+        plt.gca().xaxis.set_major_formatter(FuncFormatter(sci_notation)) # pyright: ignore[reportUnknownArgumentType]
+
+    if SCI_Y:
+        plt.gca().yaxis.set_major_formatter(FuncFormatter(sci_notation)) # pyright: ignore[reportUnknownArgumentType]
 
     plt.grid(True) # pyright: ignore[reportUnknownMemberType]
     plt.show() # pyright: ignore[reportUnknownMemberType]
