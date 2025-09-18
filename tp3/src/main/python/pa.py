@@ -1,5 +1,6 @@
 import os
 import sys
+from typing import Callable
 
 import matplotlib.pyplot as plt
 
@@ -7,43 +8,46 @@ import numpy as np
 
 import resources
 
-LENGTHS = {
-    '0.03': 0.03,
-    '0.05': 0.05,
-    '0.07': 0.07,
-    '0.09': 0.09
+Fx = Callable[[float], tuple[float, float]]
+Study = dict[str, Fx]
+
+LENGTHS: Study = {
+    '0.03': lambda p: (0.03, p),
+    '0.05': lambda p: (0.05, p),
+    '0.07': lambda p: (0.07, p),
+    '0.09': lambda p: (0.09, p)
 }
 
-AREA = {
-    '0.03': 0.009999,
-    '0.05': 0.011799,
-    '0.07': 0.013599,
-    '0.09': 0.015399
+AREA: Study = {
+    '0.03': lambda p: (0.009999, p),
+    '0.05': lambda p: (0.011799, p),
+    '0.07': lambda p: (0.013599, p),
+    '0.09': lambda p: (0.015399, p)
 }
 
-AREANT = {
-    '0.03': 100.0100010001,
-    '0.05':  84.7529451648,
-    '0.07':  73.5348187367,
-    '0.09':  64.9392817715
+AREANT: Study = {
+    '0.03': lambda p: (100.0100010001, p),
+    '0.05': lambda p: ( 84.7529451648, p),
+    '0.07': lambda p: ( 73.5348187367, p),
+    '0.09': lambda p: ( 64.9392817715, p)
 }
 
 STUDIES = {
-    'length': (LENGTHS, r"$L$ $[m]$", False),
-    'area': (AREA, r"$A$ $[m^2]$", False),
-    'areant': (AREANT, r"$A^{-1}$ $[1/m^2]$", True)
+    'length': (LENGTHS, r"$L$ $[m]$", r"$P$ $[N/m^2]$", False),
+    'area': (AREA, r"$A$ $[m^2]$", r"$P$ $[N/m^2]$", False),
+    'areant': (AREANT, r"$A^{-1}$ $[1/m^2]$", r"$P$ $[N/m^2]$", True)
 }
 
-def main(val: dict[str, float]):
+def main(val: Study):
     X:   list[float]       = []
-    Y:   list[np.floating] = []
+    Y:   list[float]       = []
     ERR: list[np.floating] = []
 
     for L in os.listdir(resources.path('pressure')):
-        INV = val.get(L, 0)
+        F = val.get(L, None)
 
-        if INV == 0:
-            print(f"Skipping L={L} (no area data)")
+        if F is None:
+            print(f"Skipping L={L} (no study function)")
             continue
 
         pressures: list[float] = []
@@ -52,8 +56,9 @@ def main(val: dict[str, float]):
                 left, _ = [*map(float, file.readline().strip().split())]
                 pressures.append(left)
 
-        X.append(INV)
-        Y.append(np.mean(pressures))
+        x, y = F(float(np.mean(pressures)))
+        X.append(x)
+        Y.append(y)
         ERR.append(np.std(pressures))
 
     return X, Y, ERR
@@ -68,7 +73,7 @@ if __name__ == '__main__':
         print("Invalid argument. Use one of: length, area, areant")
         sys.exit(1)
 
-    VALUES, LABEL, FIT = STUDY
+    VALUES, LABEL_X, LABEL_Y, FIT = STUDY
 
     X, Y, ERR = main(VALUES)
 
@@ -79,10 +84,10 @@ if __name__ == '__main__':
         plt.plot(X, M * np.array(X) + B, color='red') # pyright: ignore[reportUnknownMemberType]
 
     plt.xticks(X) # pyright: ignore[reportUnknownMemberType]
-    plt.xlabel(LABEL) # pyright: ignore[reportUnknownMemberType]
+    plt.xlabel(LABEL_X) # pyright: ignore[reportUnknownMemberType]
 
     # plt.yticks(Y) # pyright: ignore[reportUnknownMemberType]
-    plt.ylabel(r"$P$ $[N/m^2]$") # pyright: ignore[reportUnknownMemberType]
+    plt.ylabel(LABEL_Y) # pyright: ignore[reportUnknownMemberType]
 
     plt.grid(True) # pyright: ignore[reportUnknownMemberType]
     plt.show() # pyright: ignore[reportUnknownMemberType]
