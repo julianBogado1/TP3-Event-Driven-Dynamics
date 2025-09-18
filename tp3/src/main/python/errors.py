@@ -5,6 +5,19 @@ import numpy as np
 
 FIT = Callable[[np.ndarray, float], np.ndarray]
 
+def truncate_at_most_2(n: float) -> str:
+    TRUNC = int(n * 100) / 100
+    return str(TRUNC).rstrip('0').rstrip('.')
+
+def sci_notation(val: float, _):
+    if val == 0:
+        return "0"
+
+    EXP = int(np.floor(np.log10(abs(val))))
+    COEFF = val / (10**EXP)
+
+    return f"{truncate_at_most_2(COEFF)}\\times 10^{{{EXP}}}"
+
 def fitter(X: np.ndarray, Y: np.ndarray, F: FIT, LEFT: float, RIGHT: float) -> tuple[np.ndarray, np.ndarray, float, float]:
     C = np.linspace(LEFT, RIGHT, 1000)
     E = np.array([np.sum((Y - F(X, c)) ** 2) for c in C])
@@ -18,12 +31,16 @@ def fitter(X: np.ndarray, Y: np.ndarray, F: FIT, LEFT: float, RIGHT: float) -> t
 def plot(C: np.ndarray, E: np.ndarray, MIN_X: float, MIN_Y: float):
     plt.plot(C, E) # pyright: ignore[reportUnknownMemberType]
 
-    plt.axhline(y=MIN_Y, color='black', linestyle='--') # pyright: ignore[reportUnknownMemberType]
-    plt.axvline(x=MIN_X, color='black', linestyle='--') # pyright: ignore[reportUnknownMemberType]
+    label = rf'$a_{{\rm óptimo}} = {sci_notation(MIN_X, 0)}$'
+    plt.axvline(x=MIN_X, color='r', linestyle='--', label=label) # pyright: ignore[reportUnknownMemberType]
 
-    plt.xlabel('c') # pyright: ignore[reportUnknownMemberType]
-    plt.ylabel('E(c)') # pyright: ignore[reportUnknownMemberType]
+    label = rf'$E(a_{{\rm óptimo}}) = {sci_notation(MIN_Y, 0)}$'
+    plt.axhline(y=MIN_Y, color='g', linestyle='--', label=label) # pyright: ignore[reportUnknownMemberType]
 
+    plt.xlabel('a') # pyright: ignore[reportUnknownMemberType]
+    plt.ylabel('E(a)') # pyright: ignore[reportUnknownMemberType]
+
+    plt.legend(loc='upper center', bbox_to_anchor=(0.3, 1)) # pyright: ignore[reportUnknownMemberType]
     plt.show() # pyright: ignore[reportUnknownMemberType]
 
 def origin(P1: tuple[float, float], P2: tuple[float, float]):
