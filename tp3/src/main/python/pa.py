@@ -8,6 +8,7 @@ from matplotlib.ticker import FuncFormatter
 import numpy as np
 
 import resources
+from errors import LINEAR, origin, fitter
 
 Fx = Callable[[float], tuple[float, float]]
 Study = dict[str, Fx]
@@ -107,8 +108,10 @@ if __name__ == '__main__':
     plt.errorbar(X, Y, yerr=ERR, fmt='o') # pyright: ignore[reportUnknownMemberType]
 
     if FIT:
-        M, B = np.polyfit(X, Y, 1)
-        plt.plot(X, M * np.array(X) + B, color='red') # pyright: ignore[reportUnknownMemberType]
+        LINE = np.linspace(X[0], X[-1], 1000)
+        B = origin((X[0], Y[0]), (X[-1], Y[-1]))
+        _, _, M, _ = fitter(np.array(X), np.array(Y), LINEAR(B), 0, 0.029)
+        plt.plot(LINE, M * LINE + B, color='red') # pyright: ignore[reportUnknownMemberType]
 
     plt.xticks(X, fontsize=FS) # pyright: ignore[reportUnknownMemberType]
     plt.xlabel(LABEL_X, fontsize=FS) # pyright: ignore[reportUnknownMemberType]
