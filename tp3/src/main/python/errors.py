@@ -37,8 +37,11 @@ def plot(C: np.ndarray, E: np.ndarray, MIN_X: float, MIN_Y: float):
     label = rf'$E(a_{{\rm óptimo}}) = {sci_notation(MIN_Y, 0)}$'
     plt.axhline(y=MIN_Y, color='g', linestyle='--', label=label) # pyright: ignore[reportUnknownMemberType]
 
-    plt.xlabel('a') # pyright: ignore[reportUnknownMemberType]
-    plt.ylabel('E(a)') # pyright: ignore[reportUnknownMemberType]
+    plt.xlabel('a', fontsize=24) # pyright: ignore[reportUnknownMemberType]
+    plt.ylabel('E(a)', fontsize=24) # pyright: ignore[reportUnknownMemberType]
+
+    plt.xticks(fontsize=24) # pyright: ignore[reportUnknownMemberType]
+    plt.yticks(fontsize=24) # pyright: ignore[reportUnknownMemberType]
 
     plt.legend(loc='upper center', bbox_to_anchor=(0.3, 1)) # pyright: ignore[reportUnknownMemberType]
     plt.show() # pyright: ignore[reportUnknownMemberType]
