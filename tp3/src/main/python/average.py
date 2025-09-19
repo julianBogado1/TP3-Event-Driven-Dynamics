@@ -30,7 +30,7 @@ CHAMBERS: dict[int, tuple[str, str]] = {
     7: ('left', 'vertical')
 }
 
-def main(cut: int = 60):
+def main(cut: int = 60, dry: bool = False):
     with open(resources.path('events.txt'), 'r') as file:
         events = [
             Event(i, line.strip().split(' '))
@@ -98,12 +98,13 @@ def main(cut: int = 60):
     prom_izq = np.mean(pressures_izq[I0:])
     prom_der = np.mean(pressures_der[I0:])
 
-    dir = resources.path("pressure", str(L))
-    os.makedirs(dir, exist_ok=True)
+    if not dry:
+        dir = resources.path("pressure", str(L))
+        os.makedirs(dir, exist_ok=True)
 
-    file = resources.path(dir, f"{int(time.time())}.txt")
-    with open(file, "w") as f:
-        f.write(f"{prom_izq} {prom_der}\n")
+        file = resources.path(dir, f"{int(time.time())}.txt")
+        with open(file, "w") as f:
+            f.write(f"{prom_izq} {prom_der}\n")
 
     return I0, pressures_izq, prom_izq, pressures_der, prom_der, times
 
@@ -111,18 +112,26 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", type=float, default=60, help="Balance cut time")
     parser.add_argument("-p", action="store_true", help="Show plot")
+    parser.add_argument("--dry", action="store_true", help="Don't output results")
     args = parser.parse_args()
 
-    i, pl, al, pr, ar, times = main(args.c)
+    i, pl, al, pr, ar, times = main(args.c, args.dry)
 
     if args.p:
-        plt.plot(times[i:], pl[i:], color='b') # pyright: ignore[reportUnknownMemberType]
-        plt.axhline(y=float(al), color='b', linestyle='--') # pyright: ignore[reportUnknownMemberType]
+        plt.axvline(x=args.c, color='black', linestyle='-', label='Estacionario') # pyright: ignore[reportUnknownMemberType]
 
-        plt.plot(times[i:], pr[i:], color='r') # pyright: ignore[reportUnknownMemberType]
-        plt.axhline(y=float(ar), color='r', linestyle='--') # pyright: ignore[reportUnknownMemberType]
+        plt.plot(times, pl, color='b', label='Recinto izquierdo') # pyright: ignore[reportUnknownMemberType]
+        plt.axhline(y=float(al), color='b', linestyle='--', label='Promedio izquierdo') # pyright: ignore[reportUnknownMemberType]
 
-        plt.xlabel(r"$t$ $[s]$") # pyright: ignore[reportUnknownMemberType]
-        plt.ylabel(r"$P$ $[N/m^2]$") # pyright: ignore[reportUnknownMemberType]
+        plt.plot(times, pr, color='r', label='Recinto derecho') # pyright: ignore[reportUnknownMemberType]
+        plt.axhline(y=float(ar), color='r', linestyle='--', label='Promedio derecho') # pyright: ignore[reportUnknownMemberType]
+
+        plt.xticks(fontsize=24) # pyright: ignore[reportUnknownMemberType]
+        plt.yticks(fontsize=24) # pyright: ignore[reportUnknownMemberType]
+
+        plt.xlabel(r"$t$ $(s)$", fontsize=24) # pyright: ignore[reportUnknownMemberType]
+        plt.ylabel(r"$P$ $(N/m)$", fontsize=24) # pyright: ignore[reportUnknownMemberType]
+
+        plt.legend() # pyright: ignore[reportUnknownMemberType]
 
         plt.show() # pyright: ignore[reportUnknownMemberType]
