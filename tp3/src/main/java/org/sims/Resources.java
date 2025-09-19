@@ -1,9 +1,11 @@
 package org.sims;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 public abstract class Resources {
     public static final String OUTPUT_PATH = Path.of("src", "main", "python", "simulations").toAbsolutePath().toString();
@@ -17,11 +19,9 @@ public abstract class Resources {
         if (!directory.exists()) {
             directory.mkdirs();
         } else if (!preserve) {
-            for (final var file : directory.listFiles()) {
-                if (file.isFile()) {
-                    file.delete();
-                }
-            }
+            List.of(directory.listFiles()).parallelStream()
+                    .filter(File::isFile)
+                    .forEach(File::delete);
         }
     }
 

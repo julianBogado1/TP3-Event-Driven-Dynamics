@@ -44,3 +44,6 @@ venv/
 .venv/
 ENV/
 *env/*
+
+# Output
+output/

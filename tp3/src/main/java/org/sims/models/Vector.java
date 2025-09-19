@@ -1,11 +1,27 @@
 package org.sims.models;
 
 public record Vector(double x, double y) {
-    public static final Vector ZERO = new Vector(0.0, 0.0);
+    public static final Vector NONE_NONE = new Vector(-1.0, -1.0);
+    public static final Vector NONE_ZERO = new Vector(-1.0, 0.0);
+    public static final Vector NONE_ONE = new Vector(-1.0, 1.0);
+
+    public static final Vector ZERO_NONE = new Vector(0.0, -1.0);
+    public static final Vector ZERO_ZERO = new Vector(0.0, 0.0);
+    public static final Vector ZERO_ONE = new Vector(0.0, 1.0);
+
+    public static final Vector ONE_NONE = new Vector(1.0, -1.0);
+    public static final Vector ONE_ZERO = new Vector(1.0, 0.0);
+    public static final Vector ONE_ONE = new Vector(1.0, 1.0);
+
+    public static final Vector ZERO = ZERO_ZERO;
 
     public static Vector createNormalized(Vector v) {
         final var norm = norm(v);
         return new Vector(v.x / norm, v.y / norm);
+    }
+
+    public Vector neg() {
+        return Vector.neg(this);
     }
 
     public Vector add(Vector v) {
@@ -34,6 +50,14 @@ public record Vector(double x, double y) {
 
     public double angle(Vector v) {
         return Vector.angle(this, v);
+    }
+
+    public Vector hadamard(Vector v) {
+        return Vector.hadamard(this, v);
+    }
+
+    public static Vector neg(Vector v) {
+        return new Vector(-v.x, -v.y);
     }
 
     public static Vector add(Vector v1, Vector v2) {
@@ -72,6 +96,10 @@ public record Vector(double x, double y) {
         return Math.acos(v1.dot(v2)/ (norm1*norm2));
     }
 
+    public static Vector hadamard(Vector v1, Vector v2) {
+        return new Vector(v1.x * v2.x, v1.y * v2.y);
+    }
+
     /**
      * Returns this vector as a column matrix
      * @return this vector as a vector of 1 vector
@@ -83,6 +111,6 @@ public record Vector(double x, double y) {
 
     @Override
     public String toString() {
-        return String.format("%.14f %.14f", x, y);
+        return "%.14f %.14f".formatted(x, y);
     }
 }

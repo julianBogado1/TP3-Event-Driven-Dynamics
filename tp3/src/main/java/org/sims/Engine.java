@@ -41,7 +41,7 @@ public record Engine(Simulation simulation) implements Iterable<Step> {
                 moveTo(event);
                 time = event.time();
 
-                Particle.collide(event.p(), event.c());
+                event.execute();
                 calculateEvents(event.involved(), time, queue, event.involved().toList());
 
                 return new Step(++current, Particle.deepCopy(particles), event.clone());

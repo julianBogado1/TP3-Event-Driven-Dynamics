@@ -20,15 +20,23 @@ def main():
     global abar
 
     with open(resources.path("setup.txt")) as f:
-        count, _ = [*map(float, f.readline().strip().split())]
+        count, L = [*map(float, f.readline().strip().split())]
         count = int(count)
 
         walls = [Wall(*map(float, line.strip().split())) for line in f]
 
-    executor = Executor(frames.next, frames.count())
+    executor = Executor(frames.next, frames.checkpoints())
 
     fig, ax = plt.subplots() # pyright: ignore[reportUnknownMemberType]
     ax.set_aspect('equal', adjustable="box")
+
+    ax.set_xticks([0, 0.09, 0.09 * 2]) # pyright: ignore[reportUnknownMemberType]
+    ax.set_yticks([ # pyright: ignore[reportUnknownMemberType]
+        0,
+        (0.09 - L) / 2,
+        0.09 - (0.09 - L) / 2,
+        0.09
+    ])
 
     for wall in walls:
         ax.plot([wall.start.x, wall.end.x], [wall.start.y, wall.end.y], color="black") # pyright: ignore[reportUnknownMemberType]

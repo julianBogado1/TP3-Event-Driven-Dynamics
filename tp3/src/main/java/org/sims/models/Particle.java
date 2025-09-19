@@ -38,7 +38,7 @@ public class Particle implements Collideable {
      *
      * @return ID of the particle
      */
-    public long getID() {
+    public long id() {
         return ID;
     }
 
@@ -48,6 +48,7 @@ public class Particle implements Collideable {
 
     public void setVelocity(Vector velocity) {
         this.velocity = velocity;
+        addEvent();
     }
 
     /**
@@ -152,52 +153,28 @@ public class Particle implements Collideable {
         return copy;
     }
 
-    public static void collide(Particle p, Collideable c) {
-        if (c instanceof Particle p2) {
-            collide(p, p2);
-        } else if (c instanceof Wall w) {
-            collide(p, w);
-        } else {
-            throw new IllegalArgumentException("Unknown Collideable type");
-        }
-    }
-
     /**
-     * Changes velocities of the particles received
-     * 
-     * @param p1 first particle
-     * @param p2 second particle
+     * Changes velocities of this and the particles received
+     *
+     * @param p second particle
      */
-    public static void collide(Particle p1, Particle p2) {
-        final var rvel = p2.getVelocity().subtract(p1.getVelocity());
-        final var rpos = p2.getPosition().subtract(p1.getPosition());
+    public void collide(final Particle p) {
+        final var rvel = p.velocity.subtract(this.velocity);
+        final var rpos = p.position.subtract(this.position);
 
         final var vel_pos = rvel.dot(rpos);
-        final var dist = p1.getRadius() + p2.getRadius();
+        final var dist = this.radius + p.radius;
 
         final var impulse = (2 * vel_pos) / (2 * dist);
         final var j = rpos.mult(impulse).div(dist);
 
-        p1.setVelocity(p1.getVelocity().add(j));
-        p2.setVelocity(p2.getVelocity().subtract(j));
-
-        p1.addEvent();
-        p2.addEvent();
+        this.setVelocity(this.velocity.add(j));
+        p.setVelocity(p.getVelocity().subtract(j));
     }
 
-    public static void collide(Particle p, Wall w) {
-        switch (w.orientation()) {
-            case HORIZONTAL:
-                p.setVelocity(new Vector(p.getVelocity().x(), -p.getVelocity().y()));
-                break;
-            case VERTICAL:
-                p.setVelocity(new Vector(-p.getVelocity().x(), p.getVelocity().y()));
-                break;
-            default:
-                throw new IllegalArgumentException("Unsuported wall orientation");
-        }
-
-        p.addEvent();
+    @Override
+    public String name() {
+        return "PARTICLE";
     }
 
     @Override
@@ -220,6 +197,6 @@ public class Particle implements Collideable {
 
     @Override
     public String toString() {
-        return String.format("%s %s %.14f", position, velocity, radius);
+        return "%s %s".formatted(position, velocity);
     }
 }

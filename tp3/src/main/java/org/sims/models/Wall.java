@@ -1,23 +1,25 @@
 package org.sims.models;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Function;
 
-public record Wall(Wall.Orientation orientation, Vector a, Vector b) implements Collideable {
+public record Wall(Wall.Orientation orientation, Vector a, Vector b, long id) implements Collideable {
     public static enum Orientation {
-        VERTICAL(Vector::x, Vector::y), HORIZONTAL(Vector::y, Vector::x), ANY;
+        VERTICAL(Vector::x, Vector::y, Vector.NONE_ONE::hadamard),
+        HORIZONTAL(Vector::y, Vector::x, Vector.ONE_NONE::hadamard),
+        ANY;
 
         private final Function<Vector, Double> constant;
         private final Function<Vector, Double> variable;
+        private final Function<Vector, Vector> collide;
 
-        Orientation(final Function<Vector, Double> constant, final Function<Vector, Double> variable) {
+        Orientation(final Function<Vector, Double> constant, final Function<Vector, Double> variable, Function<Vector, Vector> collide) {
             this.constant = constant;
             this.variable = variable;
+            this.collide = collide;
         }
 
         Orientation() {
-            this(_ -> null, _ -> null);
+            this(_ -> null, _ -> null, _ -> null);
         }
 
         /**
@@ -39,33 +41,25 @@ public record Wall(Wall.Orientation orientation, Vector a, Vector b) implements 
         public double variable(Vector v) {
             return variable.apply(v);
         }
+
+        /**
+         * Collide a velocity vector according to the wall orientation
+         *
+         * @param v vector to collide
+         * @return collided vector
+         */
+        public Vector collide(Vector v) {
+            return collide.apply(v);
+        }
+    }
+
+    public void collide(final Particle p) {
+        p.setVelocity(orientation.collide(p.getVelocity()));
     }
 
     @Override
     public Wall clone() {
-        return new Wall(orientation, a, b);
-    }
-
-    /**
-     * Generate the contour of the system
-     *
-     * @param L variable length of the right side
-     * @return collision time
-     */
-    public static List<Wall> generate(double L) {
-        final var lilCorner = (0.09 - L) / 2.0;
-        final var walls = new ArrayList<Wall>(8);
-
-        walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0, 0), new Vector(0.09, 0)));
-        walls.add(new Wall(Orientation.VERTICAL, new Vector(0.09, 0), new Vector(0.09, lilCorner)));
-        walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0.09, lilCorner), new Vector(0.18, lilCorner)));
-        walls.add(new Wall(Orientation.VERTICAL, new Vector(0.18, lilCorner), new Vector(0.18, lilCorner + L)));
-        walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0.18, lilCorner + L), new Vector(0.09, lilCorner + L)));
-        walls.add(new Wall(Orientation.VERTICAL, new Vector(0.09, lilCorner + L), new Vector(0.09, 0.09)));
-        walls.add(new Wall(Orientation.HORIZONTAL, new Vector(0.09, 0.09), new Vector(0, 0.09)));
-        walls.add(new Wall(Orientation.VERTICAL, new Vector(0, 0.09), new Vector(0, 0)));
-
-        return walls;
+        return new Wall(orientation, a, b, id);
     }
 
     /**
@@ -139,7 +133,12 @@ public record Wall(Wall.Orientation orientation, Vector a, Vector b) implements 
     }
 
     @Override
+    public String name() {
+        return "WALL";
+    }
+
+    @Override
     public String toString() {
-        return String.format("%s %s", a, b);
+        return "%s %s".formatted(a, b);
     }
 }

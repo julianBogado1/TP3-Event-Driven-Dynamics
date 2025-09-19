@@ -7,27 +7,21 @@ import java.util.stream.Stream;
 import org.sims.models.Collideable;
 import org.sims.models.Particle;
 import org.sims.models.Vector;
+import org.sims.models.Vertex;
 import org.sims.models.Wall;
+import org.sims.models.Wall.Orientation;
 
 /**
  * A simulation of particles in a bounded 2D space with walls.
  *
  * Defines the initial state of the simulation, and provides an engine to run
  * the simulation.
- *
- * <pre>
- * {@code
- * final var sim = new Simulation(1000, Simulation.generateInitialState(100, 0.01, 0.002), Wall.generate(0.05));
- * try (final var engine = sim.engine()) {
- *     for (final var step : engine) {
- *         // Process each step of the simulation
- *     }
- * }
- * </pre>
  */
-public record Simulation(long steps, List<Particle> particles, List<Wall> walls, List<Collideable> collideables) {
-    public Simulation(long steps, List<Particle> particles, List<Wall> walls) {
-        this(steps, List.copyOf(particles), List.copyOf(walls), Stream.concat(particles.stream(), walls.stream()).toList());
+public record Simulation(long steps, double L, List<Particle> particles, List<Collideable> box,
+        List<Collideable> collideables) {
+    public Simulation(long steps, double L, List<Particle> particles, List<Collideable> box) {
+        this(steps, L, List.copyOf(particles), List.copyOf(box),
+                Stream.concat(particles.stream(), box.stream()).toList());
     }
 
     /**
@@ -39,44 +33,79 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls,
         return new Engine(this);
     }
 
+    /**
+     * Size of the left box, where the particles start
+     */
     private static final double MAGIC_NUMBER = 0.09;
 
     /**
-     * Generates initial list of particles with random positions and radii
+     * Build a simulation with particles of random positions and radii
      *
-     * @param numParticles     number of particles to generate
-     * @param startingVelocity initial velocity of particles -> now used as x,y
-     *                         components
-     * @return true if valid position
+     * @param steps number of steps to simulate
+     * @param L     variable length of the right side
+     * @param count number of particles to generate
+     * @return the built simulation, with default initial velocity 0.01 and radius 0.0015
      */
-    public static List<Particle> generateInitialState(int numParticles, double startingVelocity, double radius) {
-        final List<Wall> walls = Wall.generate(0.05);
-        final List<Particle> particles = new ArrayList<>(numParticles);
+    public static Simulation buildSimulation(String steps, String L, String count) {
+        return buildSimulation(Long.valueOf(steps), Double.valueOf(L), Integer.valueOf(count), 0.01, 0.0015);
+    }
 
-        for (int i = 0; i < numParticles; i++) {
-            boolean generated = false;
-            double x, y;
-            while (!generated) {
-                x = Math.random() * MAGIC_NUMBER;
-                y = Math.random() * MAGIC_NUMBER;
+    /**
+     * Build a simulation with particles of random positions and radii
+     *
+     * @param steps number of steps to simulate
+     * @param L     variable length of the right side
+     * @param count number of particles to generate
+     * @param vel   initial velocity of particles (x,y components)
+     * @param radius radius of particles
+     * @return the built simulation
+     */
+    public static Simulation buildSimulation(long steps, double L, int count, double vel, double radius) {
+        final var collideables = generateBox(L);
+        final var walls = collideables.stream().filter(c -> c instanceof Wall).map(c -> (Wall) c).toList();
+        final var particles = new ArrayList<Particle>(count);
 
-                final var theta = Math.random() * 2 * Math.PI;
-                final var xVel = startingVelocity * Math.cos(theta);
-                final var yVel = startingVelocity * Math.sin(theta);
+        for (int i = 0; i < count; i++) {
+            final var theta = Math.random() * 2 * Math.PI;
+            final var velocity = new Vector(vel * Math.cos(theta), vel * Math.sin(theta));
 
-                final var p = new Particle(new Vector(x, y), new Vector(xVel, yVel), radius);
-                if (checkValidPosition(p, walls) && checkNonOverlap(p, particles)) {
-                    generated = true;
-                    particles.add(p); // Add the particle to the list
-                }
-            }
+            final var p = new Particle(null, velocity, radius);
+            do {
+                p.setPosition(new Vector(Math.random() * MAGIC_NUMBER, Math.random() * MAGIC_NUMBER));
+            } while (!checkValidPosition(p, walls) || !checkNonOverlap(p, particles));
+
+            particles.add(p);
         }
 
-        if (particles.size() < numParticles) {
+        if (particles.size() < count) {
             throw new IllegalArgumentException("Radius too big or too many particles");
         }
 
-        return particles;
+        return new Simulation(steps, L, particles, collideables);
+    }
+
+    /**
+     * Generate the contour of the system
+     *
+     * @param L variable length of the right side
+     * @return collision time
+     */
+    private static List<Collideable> generateBox(double L) {
+        final var lilCorner = (0.09 - L) / 2.0;
+        final var c = new ArrayList<Collideable>(10);
+
+        c.add(new Wall(Orientation.HORIZONTAL, new Vector(0, 0), new Vector(0.09, 0), 0));
+        c.add(new Wall(Orientation.VERTICAL, new Vector(0.09, 0), new Vector(0.09, lilCorner), 1));
+        c.add(new Vertex(new Vector(0.09, lilCorner)));
+        c.add(new Wall(Orientation.HORIZONTAL, new Vector(0.09, lilCorner), new Vector(0.18, lilCorner), 2));
+        c.add(new Wall(Orientation.VERTICAL, new Vector(0.18, lilCorner), new Vector(0.18, lilCorner + L), 3));
+        c.add(new Wall(Orientation.HORIZONTAL, new Vector(0.18, lilCorner + L), new Vector(0.09, lilCorner + L), 4));
+        c.add(new Vertex(new Vector(0.09, lilCorner + L)));
+        c.add(new Wall(Orientation.VERTICAL, new Vector(0.09, lilCorner + L), new Vector(0.09, 0.09), 5));
+        c.add(new Wall(Orientation.HORIZONTAL, new Vector(0.09, 0.09), new Vector(0, 0.09), 6));
+        c.add(new Wall(Orientation.VERTICAL, new Vector(0, 0.09), new Vector(0, 0), 7));
+
+        return c;
     }
 
     /**
@@ -95,13 +124,13 @@ public record Simulation(long steps, List<Particle> particles, List<Wall> walls,
         double minX = 0.0, maxX = 0.09;
         double minY = 0.0, maxY = 0.09;
 
-        System.out.println("particle: " + p);
-        System.out.println("MinX: " + minX + " MaxX: " + maxX + "MinY:  " + minY + "MaxY:  " + maxY);
-        System.out.println(
-                "Check X: " + ((pos.x() - radius >= minX) &&
-                        (pos.x() + radius <= maxX)) + " Check Y: "
-                        + ((pos.y() - radius >= minY) &&
-                                (pos.y() + radius <= maxY)));
+        // System.out.println("particle: " + p);
+        // System.out.println("MinX: " + minX + " MaxX: " + maxX + "MinY:  " + minY + "MaxY:  " + maxY);
+        // System.out.println(
+        //         "Check X: " + ((pos.x() - radius >= minX) &&
+        //                 (pos.x() + radius <= maxX)) + " Check Y: "
+        //                 + ((pos.y() - radius >= minY) &&
+        //                         (pos.y() + radius <= maxY)));
 
         // Check if particle (considering its radius) is within bounds
         return (pos.x() - radius >= minX) &&

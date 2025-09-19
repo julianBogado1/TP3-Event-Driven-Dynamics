@@ -8,40 +8,42 @@ import java.util.concurrent.Executors;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        final var walls = Wall.generate(0.07);
-        final var particles = Simulation.generateInitialState(200, 0.01, 0.0015);
+        final var sim = Simulation.buildSimulation(args[0], args[1], args[2]);
 
         try (final var writer = Resources.writer("setup.txt")) {
-            writer.write("%d %.14f\n".formatted(particles.size(), 0.06));
-            for (final var w : walls) {
-                writer.write("%s\n".formatted(w));
+            writer.write("%d %.14f\n".formatted(sim.particles().size(), sim.L()));
+            for (final var w : sim.box()) {
+                if (w instanceof Wall) {
+                    writer.write("%s\n".formatted(w));
+                }
             }
         }
 
         System.out.println("Preparing folder output...");
         Resources.preparePath("steps");
 
-        final var sim = new Simulation(100_000, particles, walls);
         final var engine = sim.engine();
 
         try (
-                final var pb = new ProgressBar("Simulating", sim.steps());
+                final var pba = new ProgressBar("Saving State", sim.steps() + 1);
+                final var animator = Executors.newFixedThreadPool(32);
+                final var pbt = new ProgressBar("Saving Event", sim.steps());
                 final var timeout = Resources.writer("events.txt");
-                final var animator = Executors.newFixedThreadPool(4);
-                final var timer = Executors.newSingleThreadExecutor()) {
+                final var timer = Executors.newSingleThreadExecutor();
+                final var pb = new ProgressBar("Simulating", sim.steps())) {
 
             Timer.setOutput(timeout);
-            animator.submit(new Animator(engine.initial()));
+            animator.submit(new Animator(engine.initial(), pba));
 
             for (final var step : engine) {
-                animator.submit(new Animator(step));
-                timer.submit(new Timer(step.event()));
+                animator.submit(new Animator(step, pba));
+                timer.submit(new Timer(step.event(), pbt));
                 pb.step();
             }
         }
     }
 
-    private static record Animator(Step step) implements Runnable {
+    private static record Animator(Step step, ProgressBar pb) implements Runnable {
         @Override
         public void run() {
             final var filename = "%d.txt".formatted(step.i());
@@ -49,19 +51,21 @@ public class Main {
                 for (final var p : step.particles()) {
                     writer.write("%s\n".formatted(p));
                 }
+                pb.step();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private static record Timer(Event event) implements Runnable {
+    private static record Timer(Event event, ProgressBar pb) implements Runnable {
         private static Appendable output;
 
         @Override
         public void run() {
             try {
-                output.append("%.14f\n".formatted(event.time()));
+                output.append("%s\n".formatted(event));
+                pb.step();
             } catch (Exception e) {
                 e.printStackTrace();
             }
