@@ -43,7 +43,7 @@ def plot(C: np.ndarray, E: np.ndarray, MIN_X: float, MIN_Y: float):
     plt.xticks(fontsize=24) # pyright: ignore[reportUnknownMemberType]
     plt.yticks(fontsize=24) # pyright: ignore[reportUnknownMemberType]
 
-    plt.legend(loc='upper center', bbox_to_anchor=(0.3, 1)) # pyright: ignore[reportUnknownMemberType]
+    plt.legend(loc='upper center', bbox_to_anchor=(0.3, 1), fontsize=20) # pyright: ignore[reportUnknownMemberType]
     plt.show() # pyright: ignore[reportUnknownMemberType]
 
 def origin(P1: tuple[float, float], P2: tuple[float, float]):
