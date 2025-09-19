@@ -112,9 +112,11 @@ def plot_binned(times_b, mean_msd, std_msd, slope, intercept):
     # recta del ajuste lineal
     plt.plot(times_b, slope*times_b + intercept, 'r-', label='Ajuste lineal')
     plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(sci_notation))
-    plt.xlabel("Tiempo (s)")
-    plt.ylabel("MSD (m²)")
-    plt.legend(loc='lower right')
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.xlabel("t (s)", fontsize=24)
+    plt.ylabel("MSD (m²)", fontsize=24)
+    plt.legend(loc='lower right', fontsize=20)
     plt.grid(True)
     # plt.show()
     plt.savefig("diffusion_msd.png")
@@ -173,16 +175,19 @@ def plot_error_vs_a(x, y):
     label = fr'$a_{{\rm óptimo}} = {mant}\times10^{{{int(exp)}}}$'
     plt.axvline(m_ls, color='r', linestyle='--',
                 label=label)
-    
 
     Ea_str = f"{np.min(errors):.1e}"              # por ej. '1.2e-2'
     mant, exp = Ea_str.split('e')        # mant = '1.2', exp = '-2'
     label = fr'$E(a_{{\rm óptimo}}) = {mant}\times10^{{{int(exp)}}}$'
     plt.axhline(min(errors), color='g', linestyle='--',
                 label=label)
-    plt.xlabel("a")
-    plt.ylabel("E(a)")
-    plt.legend()
+    plt.gca().xaxis.set_major_formatter(plt.FuncFormatter(sci_notation))
+    plt.gca().yaxis.set_major_formatter(plt.FuncFormatter(sci_notation))
+    plt.xlabel("a", fontsize=24)
+    plt.xticks(fontsize=16)
+    plt.ylabel("E(a)", fontsize=24)
+    plt.yticks(fontsize=16)
+    plt.legend(loc='upper center', fontsize=20)
     plt.grid(True)
     plt.savefig("diffusion_error_vs_a.png")
 
